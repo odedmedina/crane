@@ -1,7 +1,7 @@
 clear
 close
 clc
-x=0:0.1:10;
+x=0:0.1:100;
 depth=-10:0.1:10;
 
 z=0.1*(1+sin(depth));
