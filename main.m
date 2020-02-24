@@ -9,7 +9,7 @@ end_config=[35 -25 20]; %% X  Y  Z
 time_step=0.1; % between udp read
 max_ptp=2;
 
-l2=6.5; crane_h=46; N=250 ;
+l2=6.5; crane_h=46; N=230 ;
 alpha=0.117; ax=0.77; ay=1.85;
 omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
 
