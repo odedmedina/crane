@@ -35,23 +35,23 @@ fix_angles;
     dangle=abs(angle_destination-angle);
     dl=abs(l_destination-l);
     
-    angle_destination
+    angle_destination;
     
-    angle_destination=angle_destination-direction(2)*omega_max*(1+omega_max/(2*alpha))
+    angle_destination=angle_destination-direction(2)*omega_max*(1+omega_max/(2*alpha));
     
     [t_max, t_r, t_l, t_s]=timecalc([x,y,l_destination],[x_destination,y_destination,l]) ;
     
-%     if t_max == t_l
-%         vr=vr*t_r/t_l;
-%         vs=vs*t_s/t_l;
-%     elseif t_max == t_r
-%         vl=vl*t_l/t_r;
-%         vs=vs*t_s/t_r;
-%     elseif t_max == t_s
-%         vr=vr*t_r/t_s;
-%         vl=vl*t_l/t_s;
-%     end
-%     
+    if t_max == t_l
+        vr=vr*t_r/t_l;
+        vs=vs*t_s/t_l;
+    elseif t_max == t_r
+        vl=vl*t_l/t_r;
+        vs=vs*t_s/t_r;
+    elseif t_max == t_s
+        vr=vr*t_r/t_s;
+        vl=vl*t_l/t_s;
+    end
+    
     
     
     
