@@ -17,8 +17,6 @@ interp_y=linspace(p1(2),p2(2),intervals);
 interp_z=linspace(p1(3),p2(3),intervals);
 
 
-temp=max_ptp;
-max_ptp=0;
 for j=1:intervals
     
    if map_check(interp_x(j),interp_y(j),interp_z(j))
@@ -28,8 +26,6 @@ for j=1:intervals
     end
 end
 
-
-max_ptp=temp;
 
 
 end

@@ -2,7 +2,7 @@ global map map_x map_y map_z ptp_vec ptp r x y l vr theta theta_dot distance p c
 
 x_destination=x;
 
-counter=0;counter2=0;
+counter=0;damp_counter=0;
 fwrite(u,[0,0,0,1],'double')
 while 1
     read_and_fix
@@ -22,18 +22,18 @@ while 1
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     anti collision
-        if map_check((r+2*ptp+1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && direction(1)==1
-            'front warning (d)'
-            counter2=counter2+1
-            fwrite(u,[0,-al,as,1],'double');%pause(0.1)
-            ar=0;
-        end
-        if map_check((r-2*ptp-1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && direction(1)==-1
-            'back warning (d)'
-            counter2=counter2+1
-            fwrite(u,[0,-al,as,1],'double');%pause(0.1)
-            ar=0;
-        end
+        if map_check((r+2*ptp+1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && ar>0
+        
+        damp_counter=damp_counter+1
+        fwrite(u,[0,0,0,1],'double');%pause(0.1)
+        ar=0;
+    end
+    if map_check((r-2*ptp-1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && ar<0
+        
+        damp_counter=damp_counter+1
+        fwrite(u,[0,0,0,1],'double');%pause(0.1)
+        ar=0;
+    end
   
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     

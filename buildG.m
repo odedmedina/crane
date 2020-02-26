@@ -5,7 +5,7 @@ global max_ptp ptp_vec u time_step x l y angle l2 roof distance alpha omega_max 
 load('map.mat');
 max_ptp=2;
 
-crane_h=46; N=250 ;
+crane_h=46; N=300 ;
 alpha=0.117; ax=0.77; ay=1.85;
 omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
 
@@ -43,4 +43,5 @@ for j=1:N-1
 end
 
 toc
-save('G.mat','G','Px');
+save('G.mat','G','max_ptp','Px');
+tts('map ready')

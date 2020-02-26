@@ -4,16 +4,16 @@ tic
 global max_ptp ptp_vec u time_step r x l y z angle l2 roof distance alpha omega_max angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max end_config
 load('damp_time_surf.mat');load('map.mat');load('G.mat');
 
-end_config=[35 -25 20]; %% X  Y  Z
+end_config=[45 0 25]; %% X  Y  Z
 
 time_step=0.1; % between udp read
-max_ptp=2;
 
-l2=6.5; crane_h=46; N=230 ;
+
+l2=6.5; crane_h=48;% N=230 ;
 alpha=0.117; ax=0.77; ay=1.85;
 omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
 
-distance=2; %to damp
+distance=1.5; %to damp
 roof=1; %distance from the roof
 
 try
@@ -44,6 +44,7 @@ plot3([-15 60],[0 0],[0 0],'linewidth',3,'color','black') %ground
 
 % % % creates G matrix with time values
 % G=zeros(N);
+N1=length(Px);
 new_point_count=0;
 for i=1:40
     if ~map_check(end_config(1),end_config(2),i)
@@ -55,7 +56,7 @@ Px=[[r*cos(angle);r*sin(angle);z] [end_config(1);end_config(2);end_config(3)] Px
 
 N=length(Px);
 temp=zeros(N);
-temp(N-250+1:end,N-250+1:end)=G;
+temp(N-N1+1:end,N-N1+1:end)=G;
 G=temp;
 for j=1:new_point_count+2
     for k=1:N
@@ -124,10 +125,15 @@ for j=2:length(path)-1
 end
 
 vortex_damp;
-x=r*cos(angle_destination);y=r*sin(angle_destination);
-interval_moveit(x,y,Px(3,path(end)));
+read_and_fix
+while abs(z-end_config(3))>1
+    read_and_fix
+    fwrite(u,[0,sign(end_config(3)-z),0,1],'double');
+end
+    fwrite(u,[0,0,0,1],'double');
+
 toc
-['Estimated time is ' num2str(round(dist,1)) ' seconds.']
+disp(['Estimated time is ' num2str(round(dist,1)) ' seconds.'])
 
  fwrite(u,[0,0,0,1],'double');
 tts('mission accomplished')
