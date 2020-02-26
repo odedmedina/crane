@@ -145,13 +145,13 @@ while flag(1)*flag(2)*flag(3)==0
     if map_check((r)*cos(angle)-side_r*sin(angle),(r)*sin(angle)+side_r*cos(angle),crane_h-l) && s_direction==1
         
         left_counter=left_counter+1
-        fwrite(u,[ar,-al,-1,1],'double'); pause(0.1)
+        fwrite(u,[ar,-al,-0.7,1],'double'); pause(0.1)
         as=0;
     end
     if map_check((r)*cos(angle)+side_r*sin(angle),(r)*sin(angle)-side_r*cos(angle),crane_h-l) && s_direction==-1
         
         right_counter=right_counter+1
-        fwrite(u,[ar,-al,1,1],'double'); pause(0.1)
+        fwrite(u,[ar,-al,0.7,1],'double'); pause(0.1)
         as=0;
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

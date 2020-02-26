@@ -4,7 +4,7 @@ tic
 global max_ptp ptp_vec u time_step r x l y z angle l2 roof distance alpha omega_max angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max end_config
 load('damp_time_surf.mat');load('map.mat');load('G.mat');
 
-end_config=[45 0 25]; %% X  Y  Z
+end_config=[45 0 27]; %% X  Y  Z
 
 time_step=0.1; % between udp read
 
@@ -13,7 +13,7 @@ l2=6.5; crane_h=48;% N=230 ;
 alpha=0.117; ax=0.77; ay=1.85;
 omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
 
-distance=1.5; %to damp
+distance=1; %to damp
 roof=1; %distance from the roof
 
 try
