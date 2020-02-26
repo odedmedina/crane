@@ -31,6 +31,7 @@ G=zeros(N);
 
 
 for j=1:N-1
+    j
     for k=1:N
         
         isok=linecheck(Px(:,j)',Px(:,k)');

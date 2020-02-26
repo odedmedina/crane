@@ -1,6 +1,6 @@
 function [] = moveit(x_destination,y_destination,l_destination)
 
-global  map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+global   max_ptp slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
 
 
 try
@@ -36,7 +36,10 @@ if l_destination<10
 end
 
 limit=0.5;
-ar=0; al=0; as=0; vs=0.5; vl=1; vr=1;
+vs=0.5; vl=1; vr=1;
+if slow_flag
+    vs=0.5/slow_factor; vl=1/slow_factor; vr=1/slow_factor;
+end
 
 fix_angles;
 dr=abs(r_destination-r);
@@ -53,19 +56,16 @@ end
 
 [t_max, t_r, t_l, t_s]=timecalc([x,y,l_destination],[x_destination,y_destination,l]) ;
 
-if t_max == t_l
-    vr=vr*t_r/t_l;
-    vs=vs*t_s/t_l;
-elseif t_max == t_r
-    vl=vl*t_l/t_r;
-    vs=vs*t_s/t_r;
-elseif t_max == t_s
-    vr=vr*t_r/t_s;
-    vl=vl*t_l/t_s;
-end
-ar=r_direction*vr;
-    as=s_direction*vs;
-    al=l_direction*vl;
+% if t_max == t_l
+%     vr=vr*t_r/t_l;
+%     vs=vs*t_s/t_l;
+% elseif t_max == t_r
+%     vl=vl*t_l/t_r;
+%     vs=vs*t_s/t_r;
+% elseif t_max == t_s
+%     vr=vr*t_r/t_s;
+%     vl=vl*t_l/t_s;
+% end
 
 
 
@@ -88,20 +88,24 @@ end
 while flag(1)*flag(2)*flag(3)==0
  
     read_and_fix; fix_angles
-
-     if front_counter
-        ar=1;
-    end
-    if back_counter
-        ar=-1;
-    end
-    if left_counter
-        as=0.5;
-    end
-    if right_counter
-        as=-0.5;
-    end
     
+ar=sign(r_destination-r)*vr;
+    al=sign(l_destination-l)*vl;
+    as=sign(angle_destination-angle)*vs;
+    
+%      if front_counter
+%         ar=1;
+%     end
+%     if back_counter
+%         ar=-1;
+%     end
+%     if left_counter
+%         as=0.5;
+%     end
+%     if right_counter
+%         as=-0.5;
+%     end
+%     
     if abs(r-r_destination)<limit %stop if reached destination
         flag(1)=1;
         ar=0;
@@ -129,35 +133,59 @@ while flag(1)*flag(2)*flag(3)==0
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     anti collision
    
-    if map_check((r+2*ptp+1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && r_direction==1
-        
-        front_counter=front_counter+1
-        fwrite(u,[0,-al,as,1],'double');%pause(0.1)
-        ar=0;
-    end
-    if map_check((r-2*ptp-1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && r_direction==-1
-        
-        back_counter=back_counter+1
-        fwrite(u,[0,-al,as,1],'double');%pause(0.1)
-        ar=0;
-    end
-    side_r=4;
-    if map_check((r)*cos(angle)-side_r*sin(angle),(r)*sin(angle)+side_r*cos(angle),crane_h-l) && s_direction==1
-        
-        left_counter=left_counter+1
-        fwrite(u,[ar,-al,-0.7,1],'double'); pause(0.1)
-        as=0;
-    end
-    if map_check((r)*cos(angle)+side_r*sin(angle),(r)*sin(angle)-side_r*cos(angle),crane_h-l) && s_direction==-1
-        
-        right_counter=right_counter+1
-        fwrite(u,[ar,-al,0.7,1],'double'); pause(0.1)
-        as=0;
+%     if map_check((r+2*ptp+1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && r_direction==1
+%         
+%         front_counter=front_counter+1
+%         fwrite(u,[0,-al,as,1],'double');%pause(0.1)
+%         ar=0;
+%     end
+%     if map_check((r-2*ptp-1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && r_direction==-1
+%         
+%         back_counter=back_counter+1
+%         fwrite(u,[0,-al,as,1],'double');%pause(0.1)
+%         ar=0;
+%     end
+%     side_r=4;
+%     if map_check((r)*cos(angle)-side_r*sin(angle),(r)*sin(angle)+side_r*cos(angle),crane_h-l) && s_direction==1
+%         
+%         left_counter=left_counter+1
+%         fwrite(u,[ar,-al,-0.7,1],'double'); pause(0.1)
+%         as=0;
+%     end
+%     if map_check((r)*cos(angle)+side_r*sin(angle),(r)*sin(angle)-side_r*cos(angle),crane_h-l) && s_direction==-1
+%         
+%         right_counter=right_counter+1
+%         fwrite(u,[ar,-al,0.7,1],'double'); pause(0.1)
+%         as=0;
+%     end
+    angle_vec=0:0.017:2*pi;
+    max_ptp=0;
+    for j=1:length(angle_vec)
+        if  map_check(x+0.5*ptp*cos(angle_vec(j)),y+0.5*ptp*sin(angle_vec(j)),crane_h-l)
+            if (angle_vec(j)*180/pi <45 || angle_vec(j)*180/pi > 315) && r_direction==1
+                ar=-1;
+                angle_vec(j)*180/pi
+            end
+            if (angle_vec(j)*180/pi <225 && angle_vec(j)*180/pi>135) && r_direction==-1
+                ar=1;
+                angle_vec(j)*180/pi
+            end
+             if (angle_vec(j)*180/pi <135 && (angle_vec(j))*180/pi>45) && s_direction==1
+                as=-1
+                angle_vec(j)*180/pi
+            end
+            if (angle_vec(j)*180/pi <315 && angle_vec(j)*180/pi > 225) && s_direction==-1
+                as=1;
+                angle_vec(j)*180/pi
+            end
+           
+        end
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
     fwrite(u,[ar,-al,as,1],'double');
+%     fwrite(u,[0,-0,0,1],'double');
     
     try
         delete(p)
