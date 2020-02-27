@@ -28,6 +28,13 @@ for i=1:length(map_x)
             
             temp1=fread(u,7,'double');
             map(i,j,k)=temp1(7);
+            if map(i,j,k)==1 && map_z(k)<40
+                for k=k:-1:1
+                    map(i,j,k)=1;
+                end
+                
+                break
+            end
             if map_z(k)<1
                   map(i,j,k)=1;
             end

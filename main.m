@@ -4,7 +4,9 @@ tic
 global slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha  angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
 load('damp_time_surf.mat');load('map.mat');load('G.mat');
 
-end_config=[0 -17 20]; %% X  Y  Z
+end_config=[0 48 4]; %% X  Y  Z
+% end_config=[45 2 27]; %% X
+end_config=[32 23 37]; %% X  Y  Z
 
 time_step=0.1; % between udp read
 

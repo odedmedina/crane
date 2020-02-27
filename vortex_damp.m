@@ -21,21 +21,31 @@ while 1
         ar=0;
     end
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     anti collision
-        if map_check((r+2*ptp+1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && ar>0
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
+    angle_vec=0:0.017:2*pi;
+    temp=max_ptp;
+    max_ptp=0;
+    ptp_factor=1;
+    
+    for j=1:length(angle_vec)
+        if  map_check(x+ptp_factor*ptp*cos(angle_vec(j)+angle),y+ptp_factor*ptp*sin(angle_vec(j)+angle),z)
+            if (angle_vec(j)*180/pi <45 || angle_vec(j)*180/pi > 315) && ar>0
+                ar=-1;
+            end
+            if (angle_vec(j)*180/pi <225 && angle_vec(j)*180/pi>135) && ar<0
+                ar=1;
+            end
+            if (angle_vec(j)+angle)*180/pi>350
+                (angle_vec(j)+angle)*180/pi-360
+            else
+                (angle_vec(j)+angle)*180/pi
+            end
+            plot3(x+ptp_factor*ptp*cos(angle_vec(j)+angle),y+ptp_factor*ptp*sin(angle_vec(j)+angle),z,'*r','markersize',10)
+        end
         
-        damp_counter=damp_counter+1
-        fwrite(u,[0,0,0,1],'double');%pause(0.1)
-        ar=0;
     end
-    if map_check((r-2*ptp-1)*cos(angle),(r+2*ptp+1)*sin(angle),crane_h-l) && ar<0
-        
-        damp_counter=damp_counter+1
-        fwrite(u,[0,0,0,1],'double');%pause(0.1)
-        ar=0;
-    end
-  
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    max_ptp=temp;
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
     
