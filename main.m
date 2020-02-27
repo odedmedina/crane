@@ -1,12 +1,14 @@
 close all;clear all;clc; % % % % % % % % % % % % % crane [length = 47, height=48]
 tic
 
-global slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha  angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
+global slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha 
+global angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
 load('damp_time_surf.mat');load('map.mat');load('G.mat');
 
-end_config=[0 48 4]; %% X  Y  Z
-% end_config=[45 2 27]; %% X
-end_config=[32 23 37]; %% X  Y  Z
+end_config=[45 -2 27]; 
+% end_config=[32 23 37];
+% end_config=[23 35 4];
+end_config=[5 0 6];
 
 time_step=0.1; % between udp read
 
@@ -137,14 +139,22 @@ read_and_fix;
 toc
 tic
 for j=2:length(path)-1
-    interval_moveit(Px(1,path(j)),Px(2,path(j)),Px(3,path(j)));
+    moveit(Px(1,path(j)),Px(2,path(j)),Px(3,path(j)));
 end
 
+
+fwrite(u,[0,0,0,1],'double');
 if slow_flag
     disp('                  Slow Movement Was Chosen')
-    interval_moveit(Px(1,path(end)),Px(2,path(end)),Px(3,path(end)));
+    moveit(Px(1,path(end)),Px(2,path(end)),Px(3,path(end)));
     else
 vortex_damp;
+try
+    u=connectToCrane;
+catch
+    comfix
+    u=connectToCrane;
+end
 read_and_fix
 while abs(z-end_config(3))>1
     read_and_fix

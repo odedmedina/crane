@@ -3,7 +3,7 @@ tic
 
 global max_ptp ptp_vec u time_step x l y angle l2 roof distance alpha omega_max map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max end_config
 load('map.mat');
-max_ptp=2;
+max_ptp=3;
 
 crane_h=46; N=250 ;
 alpha=0.117; ax=0.77; ay=1.85;
@@ -22,9 +22,6 @@ hold on; grid on;xlabel('x');ylabel('y');zlabel('z'); axis equal
 [obsx]=makepoints2(100000);
 plot3(obsx(1,:),obsx(2,:),obsx(3,:),'k.')
 
-% % % draw crain
-plot3([-0.5 -0.5],[0 0],[0 crane_h+5],'linewidth',10,'color',[0.8500, 0.3250, 0.0980]) %mast
-plot3([-15 60],[0 0],[0 0],'linewidth',3,'color','black') %ground
 
 % % % creates G matrix with time values
 G=zeros(N);

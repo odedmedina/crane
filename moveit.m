@@ -1,8 +1,9 @@
 function [] = moveit(x_destination,y_destination,l_destination)
 
-global   max_ptp slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+global   max_ptp slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
 
-view([0 90]);
+l_destination=crane_h-l_destination;
+% view([0 90]);
 
 try
     u=connectToCrane;
@@ -125,10 +126,10 @@ while flag(1)*flag(2)*flag(3)==0
     end
     
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% in move damping
-    %         if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1
-    %             ar=0.2*r_direction;
-    %         end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% in move damping
+            if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1
+                ar=0.2*r_direction;
+            end
     %
     
     
@@ -161,6 +162,9 @@ while flag(1)*flag(2)*flag(3)==0
         end
         
     end
+    if  map_check(x,y,z) && al>0
+        al=0;
+    end
     max_ptp=temp;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -182,7 +186,7 @@ while flag(1)*flag(2)*flag(3)==0
     p(6)=plot3([-12*cos(angle) 0 50*cos(angle)],[-12*sin(angle) 0 50*sin(angle)],[crane_h crane_h+5 crane_h],'linewidth',2,'color','black'); % cable
     p(7)=plot3([-11*cos(angle) -5*cos(angle)],[-11*sin(angle) -5*sin(angle)],[crane_h-1 crane_h-1],'linewidth',8,'color','black'); % weight
     ptp_vec=[ptp_vec ptp];
-    view([90-toc 90-toc]);
+%     view([90-toc 90-toc]);
     
     
 end
