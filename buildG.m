@@ -3,7 +3,7 @@ tic
 
 global max_ptp ptp_vec u time_step x l y angle l2 roof distance alpha omega_max map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max end_config
 load('map.mat');
-max_ptp=3;
+max_ptp=5;
 
 crane_h=46; N=250 ;
 alpha=0.117; ax=0.77; ay=1.85;

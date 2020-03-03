@@ -1,27 +1,53 @@
-global map map_x map_y map_z ptp_vec ptp r x y l vr theta theta_dot distance p crane_h end_config phi obs_xy obs_dim obs_num  roof
+global phi_dot phi angle map map_x map_y map_z ptp_vec ptp r x y l z vr theta theta_dot distance p crane_h end_config phi obs_xy obs_dim obs_num  roof
 
-x_destination=x;
+r_destination=r;
+angle_destination=angle;
 
 counter=0;damp_counter=0;
 fwrite(u,[0,0,0,1],'double')
 while 1
     read_and_fix
     
-    if (theta_dot>0 && theta*180/pi>0.5 && x<x_destination+distance) %|| x<x_destination-distance
+    if (theta_dot>0 && theta*180/pi>0.5 && r<r_destination+distance) %|| r<r_destination-distance
         ar=min(1,1.5*l/crane_h);
         
-    elseif (theta_dot<0 && theta*180/pi<-0.5 && x>x_destination-distance) %|| x>x_destination+distance
+    elseif (theta_dot<0 && theta*180/pi<-0.5 && r>r_destination-distance) %|| r>r_destination+distance
         ar=max(-1,-1.5*l/crane_h);
         
     else
         ar=0;
     end
     
-    if abs(l*theta_dot-vr)<0.05 && abs(x-x_destination)<distance
+    if abs(l*theta_dot-vr)<0.05 && abs(r-r_destination)<distance
         ar=0;
     end
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    if (phi_dot>0 && phi*180/pi>0.5 && angle*180/pi<angle_destination*180/pi+5) %|| x<x_destination-distance
+        as=1;
+        
+    elseif (phi_dot<0 && phi*180/pi<-0.5 && angle*180/pi>angle_destination*180/pi-5c) %|| x>x_destination+distance
+        as=-1;
+        
+    else
+        as=0;
+    end
+    
+       
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
+if 0
     angle_vec=0:0.017:2*pi;
     temp=max_ptp;
     max_ptp=0;
@@ -45,11 +71,12 @@ while 1
         
     end
     max_ptp=temp;
+end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
     
-    fwrite(u,[ar,0,0,1],'double');
+    fwrite(u,[ar,0,as,1],'double');
     pause(0.1)
     
     if ptp<0.5

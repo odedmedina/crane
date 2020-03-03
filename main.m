@@ -1,14 +1,14 @@
 close all;clear all;clc; % % % % % % % % % % % % % crane [length = 47, height=48]
 tic
 
-global slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha 
+global slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha ptp_counter
 global angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
 load('damp_time_surf.mat');load('map.mat');load('G.mat');
 
-end_config=[45 -2 27]; 
-% end_config=[32 23 37];
+end_config=[45 4 27]; 
+% end_config=[32 23 39];
 % end_config=[23 35 4];
-end_config=[5 0 6];
+% end_config=[0 7 8];
 
 time_step=0.1; % between udp read
 
@@ -16,7 +16,7 @@ time_step=0.1; % between udp read
 l2=6.5; crane_h=48;
 alpha=0.117; ax=0.77; ay=1.85;
 omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
-
+ptp_counter=1;
 distance=1.5; %to damp
 
 

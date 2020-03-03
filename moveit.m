@@ -1,6 +1,7 @@
 function [] = moveit(x_destination,y_destination,l_destination)
 
-global   max_ptp slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+global   max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+
 
 l_destination=crane_h-l_destination;
 % view([0 90]);
@@ -50,10 +51,10 @@ dl=abs(l_destination-l);
 
 
 
-if abs(angle-angle_destination)*180/pi>5
-    angle_destination=angle_destination-s_direction*omega_max*(1+omega_max/(2*alpha))-0.08*s_direction;
-    % angle_destination=angle_destination-s_direction*omega_max*(1+omega_max/(2*alpha));
-end
+% if abs(angle-angle_destination)*180/pi>5
+%     angle_destination=angle_destination-s_direction*omega_max*(1+omega_max/(2*alpha))-0.08*s_direction;
+%     % angle_destination=angle_destination-s_direction*omega_max*(1+omega_max/(2*alpha));
+% end
 
 
 [t_max, t_r, t_l, t_s]=timecalc([x,y,l_destination],[x_destination,y_destination,l]) ;
@@ -125,52 +126,53 @@ while flag(1)*flag(2)*flag(3)==0
         al=0;
     end
     
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% in move damping
-            if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1
-                ar=0.2*r_direction;
-            end
     %
-    
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
-    angle_vec=0:0.017:2*pi;
-    temp=max_ptp;
-    max_ptp=0;
-    ptp_factor=1;
-    
-    for j=1:length(angle_vec)
-        if  map_check(x+ptp_factor*ptp*cos(angle_vec(j)+angle),y+ptp_factor*ptp*sin(angle_vec(j)+angle),z)
-            if (angle_vec(j)*180/pi <45 || angle_vec(j)*180/pi > 315) && r_direction==1
-                ar=-1;
-            end
-            if (angle_vec(j)*180/pi <225 && angle_vec(j)*180/pi>135) && r_direction==-1
-                ar=1;
-            end
-            if (angle_vec(j)*180/pi <135 && (angle_vec(j))*180/pi>45) && s_direction==1
-                as=-1;
-            end
-            if (angle_vec(j)*180/pi <315 && angle_vec(j)*180/pi > 225) && s_direction==-1
-                as=1;
-            end
-            if (angle_vec(j)+angle)*180/pi>350
-                (angle_vec(j)+angle)*180/pi-360
-            else
-                (angle_vec(j)+angle)*180/pi
-            end
-            plot3(x+ptp_factor*ptp*cos(angle_vec(j)+angle),y+ptp_factor*ptp*sin(angle_vec(j)+angle),z,'*r','markersize',10)
+    %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% in move damping
+    if 0
+        if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1
+            ar=0.2*r_direction;
         end
+    end 
+    
+    if 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
+        angle_vec=0:0.017:2*pi;
+        temp=max_ptp;
+        max_ptp=0;
+        ptp_factor=1;
         
+        for j=1:length(angle_vec)
+            if  map_check(x+ptp_factor*ptp*cos(angle_vec(j)+angle),y+ptp_factor*ptp*sin(angle_vec(j)+angle),z)
+                if (angle_vec(j)*180/pi <45 || angle_vec(j)*180/pi > 315) && r_direction==1
+                    ar=-1;
+                end
+                if (angle_vec(j)*180/pi <225 && angle_vec(j)*180/pi>135) && r_direction==-1
+                    ar=1;
+                end
+                if (angle_vec(j)*180/pi <135 && (angle_vec(j))*180/pi>45) && s_direction==1
+                    as=-1;
+                end
+                if (angle_vec(j)*180/pi <315 && angle_vec(j)*180/pi > 225) && s_direction==-1
+                    as=1;
+                end
+                if (angle_vec(j)+angle)*180/pi>350
+                    (angle_vec(j)+angle)*180/pi-360
+                else
+                    (angle_vec(j)+angle)*180/pi
+                end
+                plot3(x+ptp_factor*ptp*cos(angle_vec(j)+angle),y+ptp_factor*ptp*sin(angle_vec(j)+angle),z,'*r','markersize',10)
+            end
+            
+        end
+        if  map_check(x,y,z) && al>0
+            al=0;
+        end
+        max_ptp=temp;
     end
-    if  map_check(x,y,z) && al>0
-        al=0;
-    end
-    max_ptp=temp;
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
-        fwrite(u,[ar,-al,as,1],'double');
-%     fwrite(u,[0,-0,0,1],'double');
+    %         fwrite(u,[ar,-al,as,1],'double');
+    fwrite(u,[0,-0,0,1],'double');
     
     try
         delete(p)
@@ -186,7 +188,7 @@ while flag(1)*flag(2)*flag(3)==0
     p(6)=plot3([-12*cos(angle) 0 50*cos(angle)],[-12*sin(angle) 0 50*sin(angle)],[crane_h crane_h+5 crane_h],'linewidth',2,'color','black'); % cable
     p(7)=plot3([-11*cos(angle) -5*cos(angle)],[-11*sin(angle) -5*sin(angle)],[crane_h-1 crane_h-1],'linewidth',8,'color','black'); % weight
     ptp_vec=[ptp_vec ptp];
-%     view([90-toc 90-toc]);
+    %     view([90-toc 90-toc]);
     
     
 end
