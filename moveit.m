@@ -21,6 +21,7 @@ front_counter=0;back_counter=0;right_counter=0;left_counter=0;
 r_destination=sqrt(x_destination^2+y_destination^2);
 angle_destination=atan2(y_destination,x_destination);
 fix_angles;
+
 r_direction=sign(r_destination-r);
 l_direction=sign(l_destination-l);
 s_direction=sign(angle_destination-angle);
@@ -52,7 +53,7 @@ dl=abs(l_destination-l);
 
 
 % if abs(angle-angle_destination)*180/pi>5
-%     angle_destination=angle_destination-s_direction*omega_max*(1+omega_max/(2*alpha))-0.08*s_direction;
+%     angle_destination=angle_destination-s_direction*omega_max*(1+omega_max/(2*alpha))-0.055*s_direction;
 %     % angle_destination=angle_destination-s_direction*omega_max*(1+omega_max/(2*alpha));
 % end
 
@@ -69,9 +70,6 @@ dl=abs(l_destination-l);
 %     vr=vr*t_r/t_s;
 %     vl=vl*t_l/t_s;
 % end
-
-
-
 
 flag=[0 0 0];
 
@@ -96,19 +94,10 @@ while flag(1)*flag(2)*flag(3)==0
     al=sign(l_destination-l)*vl;
     as=sign(angle_destination-angle)*vs;
     
-    %      if front_counter
-    %         ar=1;
-    %     end
-    %     if back_counter
-    %         ar=-1;
-    %     end
-    %     if left_counter
-    %         as=0.5;
-    %     end
-    %     if right_counter
-    %         as=-0.5;
-    %     end
-    %
+    if abs(angle_destination-angle)*180/pi<8 && slow_flag==0
+        as=0.25*as;
+    end
+   
     if abs(r-r_destination)<limit %stop if reached destination
         flag(1)=1;
         ar=0;
@@ -129,12 +118,12 @@ while flag(1)*flag(2)*flag(3)==0
     %
     %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% in move damping
     if 0
-        if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1
+        if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1 && ar
             ar=0.2*r_direction;
         end
     end 
     
-    if 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
+    if 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
         angle_vec=0:0.017:2*pi;
         temp=max_ptp;
         max_ptp=0;
@@ -149,12 +138,12 @@ while flag(1)*flag(2)*flag(3)==0
                     ar=1;
                 end
                 if (angle_vec(j)*180/pi <135 && (angle_vec(j))*180/pi>45) && s_direction==1
-                    as=-1;
+                    as=-0.5;
                 end
                 if (angle_vec(j)*180/pi <315 && angle_vec(j)*180/pi > 225) && s_direction==-1
-                    as=1;
+                    as=0.5;
                 end
-                if (angle_vec(j)+angle)*180/pi>350
+                if (angle_vec(j)+angle)*180/pi>360
                     (angle_vec(j)+angle)*180/pi-360
                 else
                     (angle_vec(j)+angle)*180/pi
@@ -168,11 +157,11 @@ while flag(1)*flag(2)*flag(3)==0
         end
         max_ptp=temp;
     end
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
-    %         fwrite(u,[ar,-al,as,1],'double');
-    fwrite(u,[0,-0,0,1],'double');
+            fwrite(u,[ar,-al,as,1],'double');
+%     fwrite(u,[0,-0,0,1],'double');
     
     try
         delete(p)
@@ -188,7 +177,7 @@ while flag(1)*flag(2)*flag(3)==0
     p(6)=plot3([-12*cos(angle) 0 50*cos(angle)],[-12*sin(angle) 0 50*sin(angle)],[crane_h crane_h+5 crane_h],'linewidth',2,'color','black'); % cable
     p(7)=plot3([-11*cos(angle) -5*cos(angle)],[-11*sin(angle) -5*sin(angle)],[crane_h-1 crane_h-1],'linewidth',8,'color','black'); % weight
     ptp_vec=[ptp_vec ptp];
-    %     view([90-toc 90-toc]);
+        view([mod(toc,90) mod(toc,90)]);
     
     
 end

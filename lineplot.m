@@ -4,10 +4,7 @@ global map map_x map_y map_z  roof angle max_ptp vr_max vl_d_max vl_u_max omega_
 
 step=0.5;
 
-if norm(p2-p1)<1.5
-    isok= 0 ;
-    return
-end
+
 
 if p2(3)>p1(3)
     vz_max=vl_u_max;

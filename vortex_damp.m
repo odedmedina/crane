@@ -1,6 +1,7 @@
-global phi_dot phi angle map map_x map_y map_z ptp_vec ptp r x y l z vr theta theta_dot distance p crane_h end_config phi obs_xy obs_dim obs_num  roof
+global phi_dot phi angle ptp_s map map_x map_y map_z ptp_vec ptp r x y l z vr theta theta_dot distance p crane_h end_config phi obs_xy obs_dim obs_num  roof
 
 r_destination=r;
+fix_angles
 angle_destination=angle;
 
 counter=0;damp_counter=0;
@@ -25,25 +26,14 @@ while 1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if (phi_dot>0 && phi*180/pi>0.5 && angle*180/pi<angle_destination*180/pi+5) %|| x<x_destination-distance
-        as=1;
+        as=0.3;
         
-    elseif (phi_dot<0 && phi*180/pi<-0.5 && angle*180/pi>angle_destination*180/pi-5c) %|| x>x_destination+distance
-        as=-1;
+    elseif (phi_dot<0 && phi*180/pi<-0.5 && angle*180/pi>angle_destination*180/pi-5) %|| x>x_destination+distance
+        as=-0.3;
         
     else
         as=0;
     end
-    
-       
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
@@ -79,10 +69,10 @@ end
     fwrite(u,[ar,0,as,1],'double');
     pause(0.1)
     
-    if ptp<0.5
+    if ptp<0.5 && ptp_s<0.5
         counter=counter+1;
-        ar=0;
-        if counter==5
+        ar=0;as=0;
+        if counter==7
             break
         end
     else

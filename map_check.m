@@ -18,24 +18,19 @@ try
     %     if map(x,y+max_ptp,z) || map(x,y,z) || map(x,y-max_ptp,z) ||  map(x-max_ptp,y+max_ptp,z) || map(x-max_ptp,y,z) || map(x-max_ptp,y-max_ptp,z) ||  map(x+max_ptp,y+max_ptp,z) || map(x+max_ptp,y,z) || map(x+max_ptp,y-max_ptp,z)
     %         inobs=1;
     %     end
-    if ~map(x,y+max_ptp,z) && ~map(x,y,z) && ~map(x,y-max_ptp,z-1)
-        if  ~map(x-max_ptp,y+max_ptp,z) && ~map(x-max_ptp,y,z) && ~map(x-max_ptp,y-max_ptp,z-1) %%%%%%% z-1
-            if  ~map(x+max_ptp,y+max_ptp,z) && ~map(x+max_ptp,y,z) && ~map(x+max_ptp,y-max_ptp,z-1)
-                if ~map(x,y+max_ptp,z) && ~map(x,y,z) && ~map(x,y-max_ptp,z)
-                    if  ~map(x-max_ptp,y+max_ptp,z) && ~map(x-max_ptp,y,z) && ~map(x-max_ptp,y-max_ptp,z) %%%%%%% z
-                        if  ~map(x+max_ptp,y+max_ptp,z) && ~map(x+max_ptp,y,z) && ~map(x+max_ptp,y-max_ptp,z)
+    
+    if ~map(x,y+max_ptp,z) && ~map(x,y,z) && ~map(x,y-max_ptp,z)
+        if  ~map(x-max_ptp,y+max_ptp,z) && ~map(x-max_ptp,y,z) && ~map(x-max_ptp,y-max_ptp,z) %%%%%%% z
+            if  ~map(x+max_ptp,y+max_ptp,z) && ~map(x+max_ptp,y,z) && ~map(x+max_ptp,y-max_ptp,z)
+                
+                if ~map(x,y+max_ptp,z) && ~map(x,y,z) && ~map(x,y-max_ptp,z-1)
+                    if  ~map(x-max_ptp,y+max_ptp,z) && ~map(x-max_ptp,y,z) && ~map(x-max_ptp,y-max_ptp,z-1) %%%%%%% z-1
+                        if  ~map(x+max_ptp,y+max_ptp,z) && ~map(x+max_ptp,y,z) && ~map(x+max_ptp,y-max_ptp,z-1)
                             
-                            if ~map(x,y+max_ptp,z) && ~map(x,y,z) && ~map(x,y-max_ptp,z-1)
-                                if  ~map(x-max_ptp,y+max_ptp,z) && ~map(x-max_ptp,y,z) && ~map(x-max_ptp,y-max_ptp,z-1) %%%%%%% z-1
-                                    if  ~map(x+max_ptp,y+max_ptp,z) && ~map(x+max_ptp,y,z) && ~map(x+max_ptp,y-max_ptp,z-1)
-                                        
-                                        if ~map(x,y+max_ptp,z) && ~map(x,y,z) && ~map(x,y-max_ptp,z-2)
-                                            if  ~map(x-max_ptp,y+max_ptp,z) && ~map(x-max_ptp,y,z) && ~map(x-max_ptp,y-max_ptp,z-2) %%%%%%% z-2
-                                                if  ~map(x+max_ptp,y+max_ptp,z) && ~map(x+max_ptp,y,z) && ~map(x+max_ptp,y-max_ptp,z-2)
-                                                    inobs=0;
-                                                end
-                                            end
-                                        end
+                            if ~map(x,y+max_ptp,z) && ~map(x,y,z) && ~map(x,y-max_ptp,z-2)
+                                if  ~map(x-max_ptp,y+max_ptp,z) && ~map(x-max_ptp,y,z) && ~map(x-max_ptp,y-max_ptp,z-2) %%%%%%% z-2
+                                    if  ~map(x+max_ptp,y+max_ptp,z) && ~map(x+max_ptp,y,z) && ~map(x+max_ptp,y-max_ptp,z-2)
+                                        inobs=0;
                                     end
                                 end
                             end
@@ -43,6 +38,7 @@ try
                     end
                 end
             end
+            
         end
     end
     

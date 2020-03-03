@@ -5,10 +5,10 @@ global slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  dis
 global angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
 load('damp_time_surf.mat');load('map.mat');load('G.mat');
 
-end_config=[45 4 27]; 
+end_config=[45 7 27]; 
 % end_config=[32 23 39];
 % end_config=[23 35 4];
-% end_config=[0 7 8];
+% end_config=[0 36 15];
 
 time_step=0.1; % between udp read
 
@@ -123,7 +123,6 @@ end
 
 for j=1:length(path)-1 %print the path and the times
     lineplot([Px(:,path(j))'],[Px(:,path(j+1))'])
-    %     Px(1,path(j+1))],[Px(2,path(j)) Px(2,path(j+1))],[Px(3,path(j)) Px(3,path(j+1))],'g','linewidth',3)
     text(Px(1,path(j+1))',Px(2,path(j+1))',Px(3,path(j+1))',['\leftarrow ' num2str(G(path(j),path(j+1)),3) ''],'Color','red','FontSize',12)
 end
 text(37,0,58,['total time ' num2str(dist,4) ' sec'],'Color','red','FontSize',12)
@@ -149,6 +148,7 @@ if slow_flag
     moveit(Px(1,path(end)),Px(2,path(end)),Px(3,path(end)));
     else
 vortex_damp;
+ moveit(Px(1,path(j)),Px(2,path(j)),Px(3,path(j)));
 try
     u=connectToCrane;
 catch
@@ -173,7 +173,7 @@ fwrite(u,[0,0,0,1],'double');
 tts('mission accomplished')
 
 %
-% nexttile
-%   t=linspace(0,toc,length(ptp_vec));
-%   plot(t,ptp_vec);grid on;xlabel('t [sec]');ylabel('ptp [m]');
+nexttile
+  t=linspace(0,toc,length(ptp_vec));
+  plot(t,ptp_vec);grid on;xlabel('t [sec]');ylabel('ptp [m]');
 %
