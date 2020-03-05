@@ -8,10 +8,10 @@ load('damp_time_surf.mat');load('map.mat');load('G.mat');
 end_config=[45 7 27]; 
 % end_config=[32 23 39];
 % end_config=[23 35 4];
-% end_config=[0 36 15];
+% end_config=[6 -6 10];
 
 time_step=0.1; % between udp read
-
+slow_factor=2;
 
 l2=6.5; crane_h=48;
 alpha=0.117; ax=0.77; ay=1.85;
@@ -62,7 +62,7 @@ N=length(Px);
 temp=zeros(N);
 temp(N-N1+1:end,N-N1+1:end)=G;
 G=temp;
-slow_factor=3;
+
 G_slow=G*slow_factor;
 for j=1:new_point_count+2
     for k=1:N
@@ -123,7 +123,7 @@ end
 
 for j=1:length(path)-1 %print the path and the times
     lineplot([Px(:,path(j))'],[Px(:,path(j+1))'])
-    text(Px(1,path(j+1))',Px(2,path(j+1))',Px(3,path(j+1))',['\leftarrow ' num2str(G(path(j),path(j+1)),3) ''],'Color','red','FontSize',12)
+%     text(Px(1,path(j+1))',Px(2,path(j+1))',Px(3,path(j+1))',['\leftarrow ' num2str(G(path(j),path(j+1)),3) ''],'Color','red','FontSize',12)
 end
 text(37,0,58,['total time ' num2str(dist,4) ' sec'],'Color','red','FontSize',12)
 
@@ -146,6 +146,7 @@ fwrite(u,[0,0,0,1],'double');
 if slow_flag
     disp('                  Slow Movement Was Chosen')
     moveit(Px(1,path(end)),Px(2,path(end)),Px(3,path(end)));
+    vortex_damp;
     else
 vortex_damp;
  moveit(Px(1,path(j)),Px(2,path(j)),Px(3,path(j)));
@@ -169,11 +170,13 @@ fwrite(u,[0,0,0,1],'double');
 toc
 disp(['Estimated time is ' num2str(round(dist,1)) ' seconds.'])
 
+% text(37,0,58,['Total Time ' num2str(round(toc,2)) ' seconds'],'Color','red','FontSize',12)
+
 fwrite(u,[0,0,0,1],'double');
 tts('mission accomplished')
 
 %
-nexttile
+% nexttile
   t=linspace(0,toc,length(ptp_vec));
-  plot(t,ptp_vec);grid on;xlabel('t [sec]');ylabel('ptp [m]');
+%   plot(t,ptp_vec);grid on;xlabel('t [sec]');ylabel('ptp [m]');
 %
