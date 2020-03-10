@@ -10,9 +10,9 @@ end
 flushinput(u);
 
 
-map_x=-60:1:60;
-map_y=-60:1:60;
-map_z=-5:1:50;
+map_x=-60:0.5:60;
+map_y=-60:0.5:60;
+map_z=-2:0.5:50;
 
 % map=zeros(length(map_x),length(map_y));
 
@@ -42,6 +42,6 @@ for i=1:length(map_x)
         end
     end
 end
-save('map.mat','map','map_x','map_y','map_z');
+save('map2.mat','map','map_x','map_y','map_z');
 % plot_map
 

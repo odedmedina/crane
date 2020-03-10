@@ -6,7 +6,7 @@ Px=[];
 
 while length(Px)<N
   
-    zz=(crane_h-10)*rand;  
+    zz=(crane_h-12)*rand;  
     rr=47*rand+3;
     tt=rand*2*pi;
     

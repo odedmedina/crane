@@ -5,7 +5,7 @@ global max_ptp ptp_vec u time_step x l y angle l2 roof distance alpha omega_max 
 load('map.mat');
 max_ptp=5;
 
-crane_h=46; N=250 ;
+crane_h=48; N=700 ;
 alpha=0.117; ax=0.77; ay=1.85;
 omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
 

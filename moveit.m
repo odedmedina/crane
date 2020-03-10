@@ -1,6 +1,6 @@
 function [] = moveit(x_destination,y_destination,l_destination)
 
-global   max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+global  last_move max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
 
 
 l_destination=crane_h-l_destination;
@@ -35,8 +35,8 @@ end
 if r_destination<3
     r_destination=3;
 end
-if l_destination<10
-    l_destination=10;
+if l_destination<12
+    l_destination=12;
 end
 
 limit=0.5;
@@ -76,7 +76,7 @@ flag=[0 0 0];
 if abs(r-r_destination)<limit %flag if reached destination
     flag(1)=1;
 end
-if abs(angle-angle_destination)<0.01 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if abs(angle-angle_destination)<0.015 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     flag(2)=1;
 end
 if abs(l-l_destination)<limit
@@ -94,7 +94,7 @@ while flag(1)*flag(2)*flag(3)==0
     al=sign(l_destination-l)*vl;
     as=sign(angle_destination-angle)*vs;
     
-    if abs(angle_destination-angle)*180/pi<8 && slow_flag==0
+    if abs(angle_destination-angle)*180/pi<7 && slow_flag==0 && last_move
         as=0.25*as;
     end
    
@@ -103,7 +103,7 @@ while flag(1)*flag(2)*flag(3)==0
         ar=0;
     end
     
-    if abs(angle-angle_destination)<0.01 %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%%
+    if abs(angle-angle_destination)<0.015 %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%% %%%%%%%%%%%%%%
         flag(2)=1;
         as=0;
         
@@ -119,36 +119,39 @@ while flag(1)*flag(2)*flag(3)==0
     %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% in move damping
     if 0
         if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1 && ar
-            ar=0.2*r_direction;
+            ar=0.2*ar;
         end
+%          if sign(phi)~=sign(s_direction) && abs(phi*180/pi)>1 && as
+%             as=0.2*as;
+%         end        
     end 
     
-    if 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
+    if 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
         angle_vec=0:0.017:2*pi;
         temp=max_ptp;
         max_ptp=0;
-        ptp_factor=1;
+        ptp_factor=0.5;
         
         for j=1:length(angle_vec)
             if  map_check(x+ptp_factor*ptp*cos(angle_vec(j)+angle),y+ptp_factor*ptp*sin(angle_vec(j)+angle),z)
                 if (angle_vec(j)*180/pi <45 || angle_vec(j)*180/pi > 315) && r_direction==1
-                    ar=-1;
+                    ar=-0;
                 end
                 if (angle_vec(j)*180/pi <225 && angle_vec(j)*180/pi>135) && r_direction==-1
-                    ar=1;
+                    ar=0;
                 end
                 if (angle_vec(j)*180/pi <135 && (angle_vec(j))*180/pi>45) && s_direction==1
-                    as=-0.5;
+                    as=-0;
                 end
                 if (angle_vec(j)*180/pi <315 && angle_vec(j)*180/pi > 225) && s_direction==-1
-                    as=0.5;
+                    as=0;
                 end
                 if (angle_vec(j)+angle)*180/pi>360
                     (angle_vec(j)+angle)*180/pi-360
                 else
                     (angle_vec(j)+angle)*180/pi
                 end
-                plot3(x+ptp_factor*ptp*cos(angle_vec(j)+angle),y+ptp_factor*ptp*sin(angle_vec(j)+angle),z,'*r','markersize',10)
+                plot3(x+ptp_factor*ptp*cos(angle_vec(j)+angle),y+ptp_factor*ptp*sin(angle_vec(j)+angle),z,'*r','markersize',15)
             end
             
         end
@@ -177,7 +180,7 @@ while flag(1)*flag(2)*flag(3)==0
     p(6)=plot3([-12*cos(angle) 0 50*cos(angle)],[-12*sin(angle) 0 50*sin(angle)],[crane_h crane_h+5 crane_h],'linewidth',2,'color','black'); % cable
     p(7)=plot3([-11*cos(angle) -5*cos(angle)],[-11*sin(angle) -5*sin(angle)],[crane_h-1 crane_h-1],'linewidth',8,'color','black'); % weight
     ptp_vec=[ptp_vec ptp];
-        view([mod(toc,90) mod(toc,90)]);
+%         view([mod(toc,90) mod(toc,90)]);
     
     
 end

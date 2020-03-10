@@ -1,12 +1,12 @@
 close all;clear all;clc; % % % % % % % % % % % % % crane [length = 47, height=48]
 tic
 
-global slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha ptp_counter
+global last_move slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha ptp_counter
 global angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
 load('damp_time_surf.mat');load('map.mat');load('G.mat');
 
 end_config=[45 7 27]; 
-% end_config=[32 23 39];
+end_config=[32 23 36];
 % end_config=[23 35 4];
 % end_config=[6 -6 10];
 
@@ -50,7 +50,7 @@ plot3([-15 60],[0 0],[0 0],'linewidth',3,'color','black') %ground
 N1=length(Px);
 new_point_count=0;
 
-for i=1:40
+for i=1:crane_h-12
     if ~map_check(end_config(1),end_config(2),i)
         Px=[[end_config(1);end_config(2);i],Px];
         new_point_count=new_point_count+1;
@@ -125,7 +125,7 @@ for j=1:length(path)-1 %print the path and the times
     lineplot([Px(:,path(j))'],[Px(:,path(j+1))'])
 %     text(Px(1,path(j+1))',Px(2,path(j+1))',Px(3,path(j+1))',['\leftarrow ' num2str(G(path(j),path(j+1)),3) ''],'Color','red','FontSize',12)
 end
-text(37,0,58,['total time ' num2str(dist,4) ' sec'],'Color','red','FontSize',12)
+% text(37,0,58,['total time ' num2str(dist,4) ' sec'],'Color','red','FontSize',12)
 
 if dist>1000
     return
@@ -137,7 +137,11 @@ read_and_fix;
 % movment
 toc
 tic
+last_move=0;
 for j=2:length(path)-1
+    if j==length(path)-1
+        last_move=1;
+    end
     moveit(Px(1,path(j)),Px(2,path(j)),Px(3,path(j)));
 end
 
@@ -170,7 +174,7 @@ fwrite(u,[0,0,0,1],'double');
 toc
 disp(['Estimated time is ' num2str(round(dist,1)) ' seconds.'])
 
-% text(37,0,58,['Total Time ' num2str(round(toc,2)) ' seconds'],'Color','red','FontSize',12)
+text(37,0,58,['Total Time ' num2str(round(toc,2)) ' seconds'],'Color','red','FontSize',12)
 
 fwrite(u,[0,0,0,1],'double');
 tts('mission accomplished')
