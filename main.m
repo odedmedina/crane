@@ -6,9 +6,9 @@ global angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_
 load('damp_time_surf.mat');load('map.mat');load('G.mat');
 
 end_config=[45 7 27]; 
-end_config=[32 23 36];
+% end_config=[32 23 36];
 % end_config=[23 35 4];
-% end_config=[6 -6 10];
+% end_config=[6 0 6];
 
 time_step=0.1; % between udp read
 slow_factor=2;
@@ -17,7 +17,7 @@ l2=6.5; crane_h=48;
 alpha=0.117; ax=0.77; ay=1.85;
 omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
 ptp_counter=1;
-distance=1.5; %to damp
+distance=2; %to damp
 
 
 try
@@ -153,13 +153,8 @@ if slow_flag
     vortex_damp;
     else
 vortex_damp;
- moveit(Px(1,path(j)),Px(2,path(j)),Px(3,path(j)));
-try
-    u=connectToCrane;
-catch
-    comfix
-    u=connectToCrane;
-end
+%  moveit(Px(1,path(j)),Px(2,path(j)),Px(3,path(j)));
+
 read_and_fix
 while abs(z-end_config(3))>1
     read_and_fix
@@ -180,7 +175,7 @@ fwrite(u,[0,0,0,1],'double');
 tts('mission accomplished')
 
 %
-% nexttile
+nexttile
   t=linspace(0,toc,length(ptp_vec));
-%   plot(t,ptp_vec);grid on;xlabel('t [sec]');ylabel('ptp [m]');
+  plot(t,ptp_vec);grid on;xlabel('t [sec]');ylabel('ptp [m]');
 %

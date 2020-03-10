@@ -1,5 +1,6 @@
 global phi_dot phi angle ptp_s map map_x map_y map_z ptp_vec ptp r x y l z vr theta theta_dot distance p crane_h end_config phi obs_xy obs_dim obs_num  roof
 
+read_and_fix
 r_destination=r;
 fix_angles
 angle_destination=angle;
@@ -10,10 +11,10 @@ while 1
     read_and_fix
     
     if (theta_dot>0 && theta*180/pi>0.5 && r<r_destination+distance) %|| r<r_destination-distance
-        ar=min(1,1.5*l/crane_h);
+        ar=min(1,1*l/crane_h);
         
     elseif (theta_dot<0 && theta*180/pi<-0.5 && r>r_destination-distance) %|| r>r_destination+distance
-        ar=max(-1,-1.5*l/crane_h);
+        ar=max(-1,-1*l/crane_h);
         
     else
         ar=0;
@@ -72,7 +73,7 @@ end
     if ptp<0.5 && ptp_s<0.5
         counter=counter+1;
         ar=0;as=0;
-        if counter==7
+        if counter==2
             break
         end
     else
@@ -87,7 +88,7 @@ end
     
     pp(1)=plot3(x+l*sin(theta),y,crane_h-l*cos(theta),'ob','markersize',3);% actual mass
     p(2)=plot3(x,y,crane_h-l,'*y','markersize',15); % mass center
-    p(3)= plot3(x, y ,crane_h,'sw','MarkerSize',12); % trolly
+    p(3)= plot3(x, y ,crane_h,'sy','MarkerSize',8,'linewidth',2); % trolly
     p(4)=plot3([x x+l*sin(theta)],[y y],[crane_h crane_h-l*cos(theta)],'color','black'); %line (cable)
     p(5)=plot3([-12*cos(angle) 50*cos(angle)],[-12*sin(angle) 50*sin(angle)],[crane_h crane_h],'linewidth',5,'color',[0.8500, 0.3250, 0.0980]); %jib
     p(6)=plot3([-12*cos(angle) 0 50*cos(angle)],[-12*sin(angle) 0 50*sin(angle)],[crane_h crane_h+5 crane_h],'linewidth',2,'color','black'); % cable

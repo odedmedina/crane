@@ -3,7 +3,7 @@ load('map.mat');
 hold on;
 for i=1:length(map_x)
     i
-    for j=61:61
+    for j=73:73
         for k=1:length(map_z)
             
             
