@@ -1,4 +1,4 @@
-function [] = lineplot(p1,p2)
+function [] = lineplot(p1,p2,color)
 
 global map map_x map_y map_z  roof angle max_ptp vr_max vl_d_max vl_u_max omega_max crane_h;
 
@@ -71,8 +71,12 @@ for j=length(interp_z):intevals
     interp_z(j)=z2;
 end
 
-
+if color==1
 plot3(interp_r.*cos(interp_angle),interp_r.*sin(interp_angle),interp_z,'g','linewidth',3)
+end
+if color==2
+    plot3(interp_r.*cos(interp_angle),interp_r.*sin(interp_angle),interp_z,'r','linewidth',3)
+end
 % xlabel('x');ylabel('y');zlabel('z')
 end
 

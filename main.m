@@ -1,13 +1,15 @@
-close all;clear all;clc; % % % % % % % % % % % % % crane [length = 47, height=48]
+clear all
+close all;clc; % % % % % % % % % % % % % crane [length = 47, height=48]
 tic
 
-global last_move slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha ptp_counter
+global in_move_damping last_move slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha ptp_counter
 global angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
 load('damp_time_surf.mat');load('map.mat');load('G.mat');
 
-end_config=[45 7 27]; 
+% end_config=[xx yy zz];
+end_config=[45 10 25]; 
 % end_config=[32 23 36];
-% end_config=[23 35 4];
+% end_config=[40 -20 10]; 
 % end_config=[6 0 6];
 
 time_step=0.1; % between udp read
@@ -18,7 +20,7 @@ alpha=0.117; ax=0.77; ay=1.85;
 omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
 ptp_counter=1;
 distance=2; %to damp
-
+in_move_damping=0;
 
 try
     u=connectToCrane;
@@ -27,14 +29,11 @@ catch
     u=connectToCrane;
 end
 read_and_fix;
-fwrite(u,[0,0,0,1],'double');
-fwrite(u,[end_config 2],'double');
+crane_write(0,0,0,1);
+crane_write(end_config(1),end_config(2),end_config(3),2);
 read_and_fix
 
 nexttile;ptp_vec=[];
-
-% [Px,N]=makepoints(N);
-
 
 plot3(Px(1,:),Px(2,:),Px(3,:),'.')
 hold on; grid on;xlabel('x');ylabel('y');zlabel('z'); axis equal
@@ -59,9 +58,11 @@ end
 Px=[[r*cos(angle);r*sin(angle);z] [end_config(1);end_config(2);end_config(3)] Px ];
 
 N=length(Px);
-temp=zeros(N);
-temp(N-N1+1:end,N-N1+1:end)=G;
-G=temp;
+temp1=zeros(N);temp2=zeros(N);
+temp1(N-N1+1:end,N-N1+1:end)=G;
+temp2(N-N1+1:end,N-N1+1:end)=G_eff;
+G=temp1;
+G_eff=temp2; % less energy consumption
 
 G_slow=G*slow_factor;
 for j=1:new_point_count+2
@@ -72,6 +73,7 @@ for j=1:new_point_count+2
            
             G(j,k)=t_max; %time if the path is clear, 0 if not
             G_slow(j,k)=t_max*slow_factor;
+            G_eff(j,k)=t_max+norm([Px(:,j)'-Px(:,k)']);
             
         elseif isok && j~=k && k==2 && abs(Px(1,j)-Px(1,k))<0.5 && abs(Px(2,j)-Px(2,k))<0.5  % connected and above the end point
             
@@ -81,6 +83,8 @@ for j=1:new_point_count+2
             
             G(j,k)=t_l+min(t_damp_l);
             G_slow(j,k)=t_l*slow_factor;
+            G_eff(j,k)=t_l+min(t_damp_l);
+            
         elseif isok && j~=k && (abs(Px(1,j)-Px(1,k))>0.5 || abs(Px(2,j)-Px(2,k))>0.5) % connected and not above the end point
             G_slow(j,k)=t_max*slow_factor;
         end
@@ -95,6 +99,7 @@ for j=1:N
             
             G(j,k)=t_max; %time if the path is clear, 0 if not
             G_slow(j,k)=t_max*slow_factor;
+            G_eff(j,k)=t_max+norm([Px(:,j)'-Px(:,k)']);
             
         elseif isok && j~=k && k==2 && abs(Px(1,j)-Px(1,k))<0.5 && abs(Px(2,j)-Px(2,k))<0.5  % connected and above the end point
            
@@ -104,17 +109,26 @@ for j=1:N
             
             G(j,k)=t_l+min(t_damp_l);
             G_slow(j,k)=t_l*slow_factor;
+            G_eff(j,k)=t_l+min(t_damp_l);
+            
         elseif isok && j~=k && (abs(Px(1,j)-Px(1,k))>0.5 || abs(Px(2,j)-Px(2,k))>0.5) % connected and not above the end point
              G_slow(j,k)=t_max*slow_factor;
         end
     end
 end
 
-G=sparse(G);
+G_eff=sparse(G); %%%%%%%%%%%%%%% G_eff=sparse(G_eff) for shorter path
 G_slow=sparse(G_slow);
 
-[dist,path,pred] = graphshortestpath(G,1,2);
+[dist,path,pred] = graphshortestpath(G_eff,1,2);
 [dist_slow,path_slow,pred_slow] = graphshortestpath(G_slow,1,2);
+
+dist=0;
+for i=1:length(path)-1
+dist=dist+G(path(i),path(i+1));  
+end
+
+
 slow_flag=0;
 if dist_slow<dist
     dist=dist_slow;path=path_slow;pred=pred_slow;
@@ -122,12 +136,13 @@ if dist_slow<dist
 end
 
 for j=1:length(path)-1 %print the path and the times
-    lineplot([Px(:,path(j))'],[Px(:,path(j+1))'])
+    lineplot([Px(:,path(j))'],[Px(:,path(j+1))'],1)
 %     text(Px(1,path(j+1))',Px(2,path(j+1))',Px(3,path(j+1))',['\leftarrow ' num2str(G(path(j),path(j+1)),3) ''],'Color','red','FontSize',12)
 end
 % text(37,0,58,['total time ' num2str(dist,4) ' sec'],'Color','red','FontSize',12)
 
 if dist>1000
+    tts('can''t find path')
     return
 end
 
@@ -140,13 +155,13 @@ tic
 last_move=0;
 for j=2:length(path)-1
     if j==length(path)-1
-        last_move=1;
+        last_move=0;
     end
     moveit(Px(1,path(j)),Px(2,path(j)),Px(3,path(j)));
 end
 
 
-fwrite(u,[0,0,0,1],'double');
+crane_write(0,0,0,1);
 if slow_flag
     disp('                  Slow Movement Was Chosen')
     moveit(Px(1,path(end)),Px(2,path(end)),Px(3,path(end)));
@@ -158,24 +173,27 @@ vortex_damp;
 read_and_fix
 while abs(z-end_config(3))>1
     read_and_fix
-    fwrite(u,[0,sign(end_config(3)-z),0,1],'double');
+    crane_write(0,sign(end_config(3)-z),0,1);
 end
 
     
 end
 
-fwrite(u,[0,0,0,1],'double');
+crane_write(0,0,0,1);
 
-toc
+toc; elapsed=toc;
 disp(['Estimated time is ' num2str(round(dist,1)) ' seconds.'])
+fprintf(['\nError is ' num2str(round((elapsed-dist)*100/elapsed,1)) '%%.\n'])
+
 
 text(37,0,58,['Total Time ' num2str(round(toc,2)) ' seconds'],'Color','red','FontSize',12)
 
-fwrite(u,[0,0,0,1],'double');
+crane_write(0,0,0,1);
 tts('mission accomplished')
 
 %
-nexttile
-  t=linspace(0,toc,length(ptp_vec));
-  plot(t,ptp_vec);grid on;xlabel('t [sec]');ylabel('ptp [m]');
-%
+% nexttile
+  t1=linspace(0,toc,length(ptp_vec));
+%   plot(t,ptp_vec);grid on;xlabel('t [sec]');ylabel('ptp [m]');
+ptp_vec1=ptp_vec;
+ptp_vec=[];

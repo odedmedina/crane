@@ -1,4 +1,4 @@
-global u  r  time_step
+global u time_step
  
     fclose(u);
     flushinput(u);

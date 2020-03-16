@@ -9,7 +9,7 @@ crane_h=48; N=700 ;
 alpha=0.117; ax=0.77; ay=1.85;
 omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
 
-distance=2; %to damp
+
 roof=1; %distance from the roof
 
 
@@ -25,7 +25,7 @@ plot3(obsx(1,:),obsx(2,:),obsx(3,:),'k.')
 
 % % % creates G matrix with time values
 G=zeros(N);
-
+G_eff=zeros(N);
 
 for j=1:N-1
     j
@@ -35,11 +35,12 @@ for j=1:N-1
         if  isok && j~=k  
             [t_max, t_r, t_l, t_s]=timecalc(Px(:,j)',Px(:,k)');
             G(j,k)=t_max; %time if the path is clear, 0 if not
+            G_eff(j,k)=t_max+norm([Px(:,j)'-Px(:,k)']);
         
         end
     end
 end
 
 toc
-save('G.mat','G','max_ptp','Px');
+save('G.mat','G','max_ptp','Px','G_eff');
 tts('map ready')

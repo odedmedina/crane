@@ -6,7 +6,7 @@ fix_angles
 angle_destination=angle;
 
 counter=0;damp_counter=0;
-fwrite(u,[0,0,0,1],'double')
+crane_write(0,0,0,1)
 while 1
     read_and_fix
     
@@ -67,7 +67,7 @@ end
     
     
     
-    fwrite(u,[ar,0,as,1],'double');
+    crane_write(ar,0,as,1);
     pause(0.1)
     
     if ptp<0.5 && ptp_s<0.5
@@ -96,7 +96,7 @@ end
     ptp_vec=[ptp_vec ptp];
     
 end
-fwrite(u,[0,0,0,1],'double');
+crane_write(0,0,0,1);
 % tts('Damped');
 
 

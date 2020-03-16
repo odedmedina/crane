@@ -1,6 +1,7 @@
 function [] = moveit(x_destination,y_destination,l_destination)
 
-global  ptp_s last_move max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+global  ptp_s in_move_damping last_move max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+
 
 
 l_destination=crane_h-l_destination;
@@ -35,14 +36,14 @@ end
 if r_destination<3
     r_destination=3;
 end
-if l_destination<12
-    l_destination=12;
+if l_destination<13
+    l_destination=13;
 end
 
 limit=0.5;
 vs=0.5; vl=1; vr=1;
 if slow_flag
-    vs=0.5/slow_factor; vl=1/slow_factor; vr=1/slow_factor;
+    vs=0.5/slow_factor*1.5; vl=1/slow_factor; vr=1/slow_factor;
 end
 
 fix_angles;
@@ -50,26 +51,8 @@ dr=abs(r_destination-r);
 dangle=abs(angle_destination-angle);
 dl=abs(l_destination-l);
 
-
-
-% if abs(angle-angle_destination)*180/pi>5
-%     angle_destination=angle_destination-s_direction*omega_max*(1+omega_max/(2*alpha))-0.055*s_direction;
-%     % angle_destination=angle_destination-s_direction*omega_max*(1+omega_max/(2*alpha));
-% end
-
-
 [t_max, t_r, t_l, t_s]=timecalc([x,y,l_destination],[x_destination,y_destination,l]) ;
 
-% if t_max == t_l
-%     vr=vr*t_r/t_l;
-%     vs=vs*t_s/t_l;
-% elseif t_max == t_r
-%     vl=vl*t_l/t_r;
-%     vs=vs*t_s/t_r;
-% elseif t_max == t_s
-%     vr=vr*t_r/t_s;
-%     vl=vl*t_l/t_s;
-% end
 
 flag=[0 0 0];
 
@@ -117,16 +100,16 @@ while flag(1)*flag(2)*flag(3)==0
     
     %
     %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% in move damping
-    if 0
+    if in_move_damping
         if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1 && ar
             ar=0.2*ar;
         end
-        %          if sign(phi)~=sign(s_direction) && abs(phi*180/pi)>1 && as
-        %             as=0.2*as;
-        %         end
+                 if sign(phi)~=sign(s_direction) && abs(phi*180/pi)>1 && as
+                    as=0.2*as;
+                end
     end
     
-    if 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
+    if 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
         angle_vec=0:0.05:2*pi;
         temp=max_ptp;
         max_ptp=0;
@@ -165,8 +148,8 @@ while flag(1)*flag(2)*flag(3)==0
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
-    fwrite(u,[ar,-al,as,1],'double');
-    %     fwrite(u,[0,-0,0,1],'double');
+    crane_write(ar,-al,as,1);
+    %     crane_write(0,-0,0,1);
     
     try
         delete(p)
@@ -188,7 +171,7 @@ while flag(1)*flag(2)*flag(3)==0
 end
 
 if last_move
-    fwrite(u,[0,0,0,1],'double');
+    crane_write(0,0,0,1);
 end
 
 end
