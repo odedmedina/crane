@@ -5,7 +5,7 @@ global in_move_damping slow_flag  last_move slow_factor max_ptp ptp_vec u time_s
 global angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
 load('damp_time_surf.mat');load('map.mat');
 
-end_config=[45 10 23];
+end_config=[45 0 25];
 % end_config=[32 23 37];
 % end_config=[23 35 4];
 % end_config=[0 -7 5];
@@ -110,7 +110,9 @@ pause(3)
 P=[];
 in_move_damping=0;
 
-end_config=([10 0 8]);
+end_config=([10 -10 5]);
+crane_write(10,-10,2,2);
+
 read_and_fix
 P(1,:)=[x,y,z];
 P(2,:)=[x,y,crane_h-10];

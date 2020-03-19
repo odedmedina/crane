@@ -10,7 +10,7 @@ load('damp_time_surf.mat');load('map.mat');load('G.mat');
 end_config=[45 10 25]; 
 % end_config=[32 23 36];
 % end_config=[40 -20 10]; 
-% end_config=[6 0 6];
+end_config=[10 -10 5];
 
 time_step=0.1; % between udp read
 slow_factor=2;
