@@ -10,9 +10,9 @@ end
 flushinput(u);
 
 
-map_x=-60:0.5:60;
-map_y=-60:0.5:60;
-map_z=-2:0.5:50;
+map_x=-60:1:60;
+map_y=-60:1:60;
+map_z=-2:1:50;
 
 % map=zeros(length(map_x),length(map_y));
 

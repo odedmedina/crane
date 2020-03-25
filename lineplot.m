@@ -73,9 +73,11 @@ end
 
 if color==1
 plot3(interp_r.*cos(interp_angle),interp_r.*sin(interp_angle),interp_z,'g','linewidth',3)
+plot3([p1(1) p2(1)],[p1(2) p2(2)],[p1(3) p2(3)] ,'og','linewidth',3)
 end
 if color==2
     plot3(interp_r.*cos(interp_angle),interp_r.*sin(interp_angle),interp_z,'r','linewidth',3)
+    plot3([p1(1) p2(1)],[p1(2) p2(2)],[p1(3) p2(3)] ,'or','linewidth',3)
 end
 % xlabel('x');ylabel('y');zlabel('z')
 end

@@ -1,4 +1,4 @@
-global l theta theta_dot ptp phi phi_dot ptp_s
+global l theta theta_dot ptp phi phi_dot ptp_s ptp_temp
 
 
 g=9.81;

@@ -3,7 +3,7 @@ close all;clear all;clc; % % % % % % % % % % % % % crane [length = 47, height=48
 
 global in_move_damping slow_flag  last_move slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha ptp_counter
 global angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
-load('damp_time_surf.mat');load('map.mat');
+load('damp_time_surf.mat');load('map_conf.mat');
 
 end_config=[45 0 25];
 % end_config=[32 23 37];

@@ -1,15 +1,48 @@
-close all
- load('ptps.mat')
-hold on
- ptp_vec2(1:40)=ptp_vec2(1:40)*0.5;
+clear all; close all;clc; % % % % % % % % % % % % % crane [length = 47, height=48]
 
-% plot(t1,ptp_vec1,'linewidth',2)
-plot(t,ptp_vec,'g','linewidth',2) % human
-plot(t2,ptp_vec2,'b','linewidth',2) % short path
-% plot(t4,ptp_vec4,'linewidth',2) % syracuse
+global theta_dot in_move_damping last_move slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle distance alpha ptp_counter
+global  map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config ptp ptp_temp
+ 
+distance=1;crane_h=48;
+ax=100; vr_max=1.92;
+ptp_counter=1;
+time_step=0.1;
+t1_vec=[];
+ptps_vec=[];
 
-% plot(t4,ptp_vec4,'linewidth',2)
+try
+    u=connectToCrane;
+catch
+    comfix
+    u=connectToCrane;
+end
 
-grid on;xlabel('Time [sec]');ylabel('PTP [m]');
+t1=4;
+crane_write(1,0,0,1)
+pause(t1)    
+crane_write(0,0,0,1)
+theta=-1;
+while theta<0
+    read_and_fix
+end
+theta_dot=1;
 
-legend('Planned','Actual','fontsize',20)
+t_acc=vr_max/ax;
+
+    time_for_ptp=sqrt(2*ptp_temp(end)/ax);
+if time_for_ptp>t_acc
+   time_for_ptp=(ptp_temp(end)-0.5*ax*t_acc^2)/vr_max+t_acc;
+end
+    
+% time_for_ptp=sqrt(2*ptp_temp(end)/ax);
+% time_for_ptp=ptp_temp(end)/vr_max;
+
+pause((0.25*2*pi*sqrt(l/9.81)-time_for_ptp)*1)
+crane_write(1,0,0,1)
+pause(time_for_ptp*1.3)
+crane_write(0,0,0,1)
+
+pause(5)
+read_and_fix
+ptp_temp(end)
+% vortex_damp

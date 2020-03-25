@@ -1,18 +1,19 @@
 function [] = moveit(x_destination,y_destination,l_destination)
 
-global  ptp_s in_move_damping last_move max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+global  ptp_s ptp_temp in_move_damping last_move max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
 
 
 
 l_destination=crane_h-l_destination;
 % view([0 90]);
 
-try
-    u=connectToCrane;
-catch
-    comfix
-    u=connectToCrane;
-end
+% try
+%     u=connectToCrane2;
+% catch
+%     comfix
+%     u=connectToCrane2;
+% end
+
 read_and_fix
 
 
@@ -71,6 +72,28 @@ end
 
 while flag(1)*flag(2)*flag(3)==0
     
+    if (x_destination-x)<ptp && last_move && flag(2)%*flag(3)  %%%%%%%%%%%%%%%%%%%%% damp to destination
+        x
+        time_for_ptp=ptp/vr_max;
+        if (0.25*2*pi*sqrt(l/9.81)-time_for_ptp)*1 > 0
+            crane_write(0,0,0,1)
+            while theta<0
+                read_and_fix
+            end
+            pause((0.25*2*pi*sqrt(l/9.81)-time_for_ptp)*1)
+            crane_write(0.5,0,0,1)
+            pause(time_for_ptp*0.5)
+            crane_write(1,0,0,1)
+            pause(time_for_ptp*1)
+            x
+            break
+        else
+            break
+        end
+    end
+    
+    
+    
     read_and_fix; fix_angles
     
     ar=sign(r_destination-r)*vr;
@@ -100,13 +123,14 @@ while flag(1)*flag(2)*flag(3)==0
     
     %
     %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% in move damping
-    if in_move_damping
+    if in_move_damping && last_move
         if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1 && ar
             ar=0.2*ar;
         end
-                 if sign(phi)~=sign(s_direction) && abs(phi*180/pi)>1 && as
-                    as=0.2*as;
-                end
+        if sign(phi)~=sign(s_direction) && abs(phi*180/pi)>1 && as
+            as=0.2*as;
+        end
+        break
     end
     
     if 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision

@@ -1,15 +1,10 @@
-close all
- load('ptps.mat')
-hold on
- ptp_vec2(1:40)=ptp_vec2(1:40)*0.5;
-
- plot(t,ptp_vec,'linewidth',2) % human
- plot(t2,ptp_vec2,'linewidth',2) % short path
-plot(t1,ptp_vec1,'linewidth',2)% Fastest path
-plot(t4,ptp_vec4,'linewidth',2) % syracuse
-
-% plot(t4,ptp_vec4,'linewidth',2)
-
-grid on;xlabel('Time [sec]');ylabel('PTP [m]');
-
-legend('Human Operator Movement','Shortest Path Movement','Fastest Path Movement','Syracus Movement','fontsize',20)
+tic
+moveit(10, 0, 25)
+vortex_damp
+toc
+% 
+%  a=mean([20.3 19.7 20.4 20.4 18.0 20.7 19.5 19.7 19.5 21.0])
+% 
+%  b=mean([12.3 9.2 9.3 13.6 12.2 13.1 14.6 13.5 9.0 13.8])
+%  
+%  error=(a-b)/a*100
