@@ -1,6 +1,6 @@
 function [] = moveit(x_destination,y_destination,l_destination)
 
-global  ptp_s ptp_temp in_move_damping last_move max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+global  ptp_s ptp_temp end_config in_move_damping last_move max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta theta_dot p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
 
 
 
@@ -19,7 +19,7 @@ read_and_fix
 
 front_counter=0;back_counter=0;right_counter=0;left_counter=0;
 
-
+r_final_destination=sqrt(end_config(1)^2+end_config(2)^2);
 r_destination=sqrt(x_destination^2+y_destination^2);
 angle_destination=atan2(y_destination,x_destination);
 fix_angles;
@@ -42,9 +42,9 @@ if l_destination<13
 end
 
 limit=0.5;
-vs=0.5; vl=1; vr=1;
+vs=0.5; vl=1; vr_temp=1;
 if slow_flag
-    vs=0.5/slow_factor*1.5; vl=1/slow_factor; vr=1/slow_factor;
+    vs=0.5/slow_factor*1.5; vl=1/slow_factor; vr_temp=1/slow_factor;
 end
 
 fix_angles;
@@ -72,33 +72,18 @@ end
 
 while flag(1)*flag(2)*flag(3)==0
     
-    if (x_destination-x)<ptp && last_move && flag(2)%*flag(3)  %%%%%%%%%%%%%%%%%%%%% damp to destination
-        x
-        time_for_ptp=ptp/vr_max;
-        if (0.25*2*pi*sqrt(l/9.81)-time_for_ptp)*1 > 0
-            crane_write(0,0,0,1)
-            while theta<0
-                read_and_fix
-            end
-            pause((0.25*2*pi*sqrt(l/9.81)-time_for_ptp)*1)
-            crane_write(0.5,0,0,1)
-            pause(time_for_ptp*0.5)
-            crane_write(1,0,0,1)
-            pause(time_for_ptp*1)
-            x
-            break
-        else
-            break
-        end
-    end
+      read_and_fix; fix_angles
     
-    
-    
-    read_and_fix; fix_angles
-    
-    ar=sign(r_destination-r)*vr;
+    ar=sign(r_destination-r)*vr_temp;
     al=sign(l_destination-l)*vl;
     as=sign(angle_destination-angle)*vs;
+    
+
+    
+    
+    
+    
+  
     
     if abs(angle_destination-angle)*180/pi<7 && slow_flag==0 && last_move
         as=0.25*as;
@@ -175,21 +160,31 @@ while flag(1)*flag(2)*flag(3)==0
     crane_write(ar,-al,as,1);
     %     crane_write(0,-0,0,1);
     
-    try
-        delete(p)
-    catch
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% damp_move
+    if abs(r_final_destination-r)<1*ptp && abs(r_final_destination-r)>0.1*ptp %&& 0*flag(2)*flag(3)  
+        time_for_ptp=ptp/vr_max;
+        if (0.25*2*pi*sqrt(l/9.81)-time_for_ptp)*1 > 0  
+            r_final_destination=damp_move(al,as,r_direction,r_final_destination,time_for_ptp,limit);                      
+        end  
     end
     
     
-    pp(1)=plot3(x+l*sin(theta),y,crane_h-l*cos(theta),'ob','markersize',3);% actual mass
-    p(2)=plot3(x,y,crane_h-l,'*y','markersize',15); % mass center
-    p(3)= plot3(x, y ,crane_h,'sy','MarkerSize',8,'linewidth',2); % trolly
-    p(4)=plot3([x x+l*sin(theta)],[y y],[crane_h crane_h-l*cos(theta)],'color','black'); %line (cable)
-    p(5)=plot3([-12*cos(angle) 50*cos(angle)],[-12*sin(angle) 50*sin(angle)],[crane_h crane_h],'linewidth',5,'color',[0.8500, 0.3250, 0.0980]); %jib
-    p(6)=plot3([-12*cos(angle) 0 50*cos(angle)],[-12*sin(angle) 0 50*sin(angle)],[crane_h crane_h+5 crane_h],'linewidth',2,'color','black'); % cable
-    p(7)=plot3([-11*cos(angle) -5*cos(angle)],[-11*sin(angle) -5*sin(angle)],[crane_h-1 crane_h-1],'linewidth',8,'color','black'); % weight
-    ptp_vec=[ptp_vec ptp];
-    %         view([mod(toc,90) mod(toc,90)]);
+%     try
+%         delete(p)
+%     catch
+%     end
+    
+    plot_load;
+%     pp(1)=plot3(x+l*sin(theta),y,crane_h-l*cos(theta),'ob','markersize',3);% actual mass
+%     p(2)=plot3(x,y,crane_h-l,'*y','markersize',15); % mass center
+%     p(3)= plot3(x, y ,crane_h,'sy','MarkerSize',8,'linewidth',2); % trolly
+%     p(4)=plot3([x x+l*sin(theta)],[y y],[crane_h crane_h-l*cos(theta)],'color','black'); %line (cable)
+%     p(5)=plot3([-12*cos(angle) 50*cos(angle)],[-12*sin(angle) 50*sin(angle)],[crane_h crane_h],'linewidth',5,'color',[0.8500, 0.3250, 0.0980]); %jib
+%     p(6)=plot3([-12*cos(angle) 0 50*cos(angle)],[-12*sin(angle) 0 50*sin(angle)],[crane_h crane_h+5 crane_h],'linewidth',2,'color','black'); % cable
+%     p(7)=plot3([-11*cos(angle) -5*cos(angle)],[-11*sin(angle) -5*sin(angle)],[crane_h-1 crane_h-1],'linewidth',8,'color','black'); % weight
+%     ptp_vec=[ptp_vec ptp];
+   
     
     
 end

@@ -1,10 +1,13 @@
-tic
-moveit(10, 0, 25)
-vortex_damp
-toc
-% 
-%  a=mean([20.3 19.7 20.4 20.4 18.0 20.7 19.5 19.7 19.5 21.0])
-% 
-%  b=mean([12.3 9.2 9.3 13.6 12.2 13.1 14.6 13.5 9.0 13.8])
-%  
-%  error=(a-b)/a*100
+function Untitled(xx)
+global end_config ptp_counter ptp_temp
+ptp_counter=1;
+
+end_config=[xx 0 25.5];
+
+moveit(end_config(1)-0,end_config(2),end_config(3))
+% vortex_damp
+% pause(5)
+% read_and_fix
+% ptp_temp(end)
+
+% %  al and as is changing with no reason

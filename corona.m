@@ -1,10 +1,12 @@
+% % https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Israel
+
 clc; close all;
 
-x=[19:1:30];
+x=[19:1:40];
 y=round(3.157407696*1.262623258.^x,0);
 x=x-3;
 
-real_y=[298 337 433 677 705 883 1071 1442 1930 2030];
+real_y=[298 337 433 677 705 883 1071 1442 1930 2369 2693 3035 3619];
 today=length(real_y);
 
 hold on; grid on; 

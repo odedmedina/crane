@@ -35,6 +35,7 @@ theta_dot=(theta(2)-theta(1))/time_step;
 omega=(angle(2)-angle(1))/time_step;
 phi_dot=(phi(2)-phi(1))/time_step;
 
+
 theta=theta(2);x=x(2);y=y(2);r=r(2);l=l(2);angle=angle(2);dtheta=dtheta(2);phi=phi(2);
 z=crane_h-l;
 

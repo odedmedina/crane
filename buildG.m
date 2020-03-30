@@ -2,12 +2,13 @@ close all;clear all;clc; % % % % % % % % % % % % % crane [length = 47, height=48
 tic
 
 global max_ptp ptp_vec u time_step x l y angle l2 roof distance alpha omega_max map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max end_config
-load('map.mat');
+load('map1.mat');
 max_ptp=5;
 
-crane_h=48; N=700 ;
-alpha=0.117; ax=0.77; ay=1.85;
-omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
+N=500 ;
+% % % % % % % % % % % % % % % % % % % % % % Crane Parameters
+crane_h=48; alpha=0.117; ax=14; ay=1.85; omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
+
 
 
 roof=1; %distance from the roof

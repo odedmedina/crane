@@ -1,28 +1,26 @@
 clear all; close all; % % % % % % % % % % % % % crane [length = 47, height=48]
 
-global in_move_damping last_move slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle distance alpha ptp_counter
-global  map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config AdaptationLayer
+global in_move_damping last_move p slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle distance alpha ptp_counter
+global  map map_x map_y map_z crane_h ax theta ay vr_max vl_d_max vl_u_max omega_max end_config AdaptationLayer
 
 load('damp_time_surf.mat');
 load('map1.mat');load('G1.mat');  % G1/G2.mat or map1/map2.mat
 
 
-% end_config=[xx yy zz];
-% end_config=[45 10 25]; 
-% end_config=[32 23 36];
+end_config=[10 0 35.5]; 
+% end_config=[43 -5 30];
 % end_config=[40 -20 10]; 
-end_config=[45 0 35];
-
+% end_config=[0 -30 25];
 
 % % % % % % % % % % % % % % % % % % % % % % Preferences
 AdaptationLayer=0;
 time_step=0.1; % between udp read
-slow_factor=1.75;
+slow_factor=20;
 distance=2; %to damp
 plot_ptp=0;
 
 % % % % % % % % % % % % % % % % % % % % % % Crane Parameters
-crane_h=48; alpha=0.117; ax=0.77; ay=1.85; omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
+crane_h=48; alpha=0.117; ax=14; ay=1.85; omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
 
 % % % % % % % % % % % % % % % % % % % % % % Start values
 ptp_counter=1; in_move_damping=0; ptp_vec=[]; tic
@@ -83,9 +81,9 @@ for j=1:new_point_count+2
             ind=find(l_vec==round(-Px(3,j)+crane_h));
             t_damp_l=results_mean(ind,:,:);
             
-            G(j,k)=t_l+min(t_damp_l);
-            G_slow(j,k)=t_l*slow_factor;
-            G_eff(j,k)=t_l+min(t_damp_l);
+            G(j,k)=t_max+min(t_damp_l);
+            G_slow(j,k)=t_max*slow_factor;
+            G_eff(j,k)=t_max+min(t_damp_l);
             
         elseif isok && j~=k && (abs(Px(1,j)-Px(1,k))>0.5 || abs(Px(2,j)-Px(2,k))>0.5) % connected and not above the end point
             G_slow(j,k)=t_max*slow_factor;
@@ -109,9 +107,9 @@ for j=1:N
             ind=find(l_vec==round(-Px(3,j)+crane_h));
             t_damp_l=results_mean(ind,:,:);
             
-            G(j,k)=t_l+min(t_damp_l);
-            G_slow(j,k)=t_l*slow_factor;
-            G_eff(j,k)=t_l+min(t_damp_l);
+            G(j,k)=t_max+min(t_damp_l);
+            G_slow(j,k)=t_max*slow_factor;
+            G_eff(j,k)=t_max+min(t_damp_l);
             
         elseif isok && j~=k && (abs(Px(1,j)-Px(1,k))>0.5 || abs(Px(2,j)-Px(2,k))>0.5) % connected and not above the end point
              G_slow(j,k)=t_max*slow_factor;
@@ -152,12 +150,15 @@ end
 read_and_fix;
 
 % movment
-toc
+disp(['Calculation time is ' num2str(round(toc,1)) ' seconds.'])
+fprintf(['Estimated time is ' num2str(round(dist,1)) ' seconds.\n\n'])
+
 tic
 last_move=0;
+
 for j=2:length(path)-1
-    if j==length(path)-2
-        last_move=1
+    if j==length(path)-1 || (Px(1,path(j))==Px(1,path(j+1)) &&  j==length(path)-2) && ~slow_flag
+        last_move=1;
     end
     moveit(Px(1,path(j)),Px(2,path(j)),Px(3,path(j)));
 end
@@ -174,8 +175,25 @@ vortex_damp;
 
 read_and_fix
 while abs(z-end_config(3))>1
-    read_and_fix
+   
     crane_write(0,sign(end_config(3)-z),0,1);
+        try
+        delete(p)
+        catch
+        end
+    
+    pp(1)=plot3(x+l*sin(theta),y,crane_h-l*cos(theta),'ob','markersize',3);% actual mass
+    p(2)=plot3(x,y,crane_h-l,'*y','markersize',15); % mass center
+    p(3)= plot3(x, y ,crane_h,'sy','MarkerSize',8,'linewidth',2); % trolly
+    p(4)=plot3([x x+l*sin(theta)],[y y],[crane_h crane_h-l*cos(theta)],'color','black'); %line (cable)
+    p(5)=plot3([-12*cos(angle) 50*cos(angle)],[-12*sin(angle) 50*sin(angle)],[crane_h crane_h],'linewidth',5,'color',[0.8500, 0.3250, 0.0980]); %jib
+    p(6)=plot3([-12*cos(angle) 0 50*cos(angle)],[-12*sin(angle) 0 50*sin(angle)],[crane_h crane_h+5 crane_h],'linewidth',2,'color','black'); % cable
+    p(7)=plot3([-11*cos(angle) -5*cos(angle)],[-11*sin(angle) -5*sin(angle)],[crane_h-1 crane_h-1],'linewidth',8,'color','black'); % weight
+    ptp_vec=[ptp_vec ptp];
+    
+     read_and_fix
+  
+     
 end
 
     
@@ -184,8 +202,8 @@ end
 crane_write(0,0,0,1);
 
 toc; elapsed=toc;
-disp(['Estimated time is ' num2str(round(dist,1)) ' seconds.'])
-fprintf(['\nError is ' num2str(round((elapsed-dist)*100/elapsed,1)) '%%.\n'])
+
+fprintf(['  Error is ' num2str(round((elapsed-dist)*100/elapsed,1)) '%%.\n'])
 text(37,0,58,['Total Time ' num2str(round(toc,2)) ' seconds'],'Color','red','FontSize',12)
 tts('mission accomplished')
 
