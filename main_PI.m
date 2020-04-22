@@ -1,32 +1,37 @@
 close all;clear all;clc; % % % % % % % % % % % % % crane [length = 47, height=48]
 
+global in_move_damping last_move p slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle distance alpha ptp_counter
+global  map map_x map_y map_z crane_h ax theta ay vr_max vl_d_max vl_u_max omega_max end_config AdaptationLayer r_final_destination use_damp_move
 
-global in_move_damping slow_flag  last_move slow_factor max_ptp ptp_vec u time_step r x l y z angle l2  distance alpha ptp_counter
-global angle_destination map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config
-load('damp_time_surf.mat');load('map_conf.mat');
+load('damp_time_surf.mat');load('map1.mat');
 
-end_config=[45 0 25];
+% end_config=[45 0 25];
+end_config=[43 -5 25];
+% end_config=([10 -10 5]);
 % end_config=[32 23 37];
-% end_config=[23 35 4];
-% end_config=[0 -7 5];
 
-in_move_damping=1;
+% % % % % % % % % % % % % % % % % % % % % % Preferences
+AdaptationLayer=0;
 time_step=0.1; % between udp read
-ptp_counter=0;
-Px=[];
-G=[];
-l2=6.5; crane_h=48;
-alpha=0.117; ax=0.77; ay=1.85;
-omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
-slow_flag=0; last_move=1;
-distance=1.5; %to damp
+slow_factor=20;
+distance=2; %to damp
+plot_ptp=1;
+slow_flag=0;
+in_move_damping=1;
+use_damp_move=0;
+
+% % % % % % % % % % % % % % % % % % % % % % Crane Parameters
+crane_h=48; alpha=0.117; ax=14; ay=1.85; omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
+
+% % % % % % % % % % % % % % % % % % % % % % Start values
+ptp_counter=1; ptp_vec=[]; r_final_destination=sqrt(end_config(1)^2+end_config(2)^2);last_move=1; tic
 
 
 try
-    u=connectToCrane;
+    u=connectToCrane2;
 catch
     comfix
-    u=connectToCrane;
+    u=connectToCrane2;
 end
 read_and_fix;
 fwrite(u,[0,0,0,1],'double');
@@ -40,7 +45,7 @@ plot3(obsx(1,:),obsx(2,:),obsx(3,:),'k.')
 hold on; grid on;xlabel('x');ylabel('y');zlabel('z'); axis equal; 
 % % % draw obs
 
-
+movegui([1000 350]);
 % % % draw crain
 plot3([-0.5 -0.5],[0 0],[0 crane_h+5],'linewidth',10,'color',[0.8500, 0.3250, 0.0980]) %mast
 plot3([-15 60],[0 0],[0 0],'linewidth',3,'color','black') %ground
@@ -88,6 +93,7 @@ vortex_damp;
 fwrite(u,[0,0,0,1],'double');
 while abs(z-end_config(3))>1
     read_and_fix
+    plot_load
     fwrite(u,[0,sign(end_config(3)-z),0,1],'double');
 end
 
@@ -98,16 +104,22 @@ text(37,0,58,['Total Time ' num2str(round(toc,2)) ' seconds'],'Color','red','Fon
 
 
 tts('mission accomplished')
-pause(3)
+
 
 % 
 % nexttile
   t1=linspace(0,toc,length(ptp_vec));
   ptp1=ptp_vec;
-  ptp_vec=[];
+  save('ptp.mat','t1','ptp_vec')
+  
 %   plot(t,ptp_vec);grid on;xlabel('t [sec]');ylabel('ptp [m]');
+
+pause(3)
+
+if 0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 P=[];
+ptp_vec=[];
 in_move_damping=0;
 
 end_config=([10 -10 5]);
@@ -155,6 +167,7 @@ end
 fwrite(u,[0,0,0,1],'double');
 while abs(z-end_config(3))>1
     read_and_fix
+    plot_load
     fwrite(u,[0,sign(end_config(3)-z),0,1],'double');
 end
 
@@ -178,3 +191,4 @@ tts('mission accomplished')
 %
 ptp_vec=[ptp1 ptp2];
 save('ptp_HO','t','ptp_vec')
+end

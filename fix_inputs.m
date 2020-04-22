@@ -1,6 +1,6 @@
 function [outputArg1,outputArg2] = fix_inputs(temp1,temp2)
 
-global r x y l vr angle theta dtheta theta_dot  time_step hook_r hook_y z crane_h omega phi phi_dot
+global r x y l vr hook_x angle theta dtheta theta_dot  time_step hook_r hook_y z crane_h omega phi phi_dot
 
 l(1)=temp1(1); r(1)=temp1(2); angle(1)=temp1(3); hook_x(1)=temp1(4); hook_y(1)=temp1(5); hook_z(1)=temp1(6);
 l(2)=temp2(1); r(2)=temp2(2); angle(2)=temp2(3); hook_x(2)=temp2(4); hook_y(2)=temp2(5); hook_z(2)=temp2(6);

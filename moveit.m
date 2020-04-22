@@ -1,6 +1,6 @@
 function [] = moveit(x_destination,y_destination,l_destination)
 
-global  ptp_s ptp_temp end_config in_move_damping last_move max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta theta_dot p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof
+global crane_l ptp_s ptp_temp end_config in_move_damping last_move max_ptp ptp_counter slow_flag slow_factor map map_x map_y map_z ptp_vec u ptp x y z r l angle omega alpha theta theta_dot p crane_h angle_destination phi vr_max vl_d_max vl_u_max omega_max roof r_final_destination use_damp_move
 
 
 
@@ -19,7 +19,7 @@ read_and_fix
 
 front_counter=0;back_counter=0;right_counter=0;left_counter=0;
 
-r_final_destination=sqrt(end_config(1)^2+end_config(2)^2);
+
 r_destination=sqrt(x_destination^2+y_destination^2);
 angle_destination=atan2(y_destination,x_destination);
 fix_angles;
@@ -31,8 +31,8 @@ s_direction=sign(angle_destination-angle);
 
 
 
-if r_destination>50
-    r_destination=50;
+if r_destination>floor(crane_l)
+    r_destination=floor(crane_l);
 end
 if r_destination<3
     r_destination=3;
@@ -115,7 +115,7 @@ while flag(1)*flag(2)*flag(3)==0
         if sign(phi)~=sign(s_direction) && abs(phi*180/pi)>1 && as
             as=0.2*as;
         end
-        break
+%         break
     end
     
     if 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
@@ -160,31 +160,19 @@ while flag(1)*flag(2)*flag(3)==0
     crane_write(ar,-al,as,1);
     %     crane_write(0,-0,0,1);
     
-    
+    r_final_destination=40;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% damp_move
-    if abs(r_final_destination-r)<1*ptp && abs(r_final_destination-r)>0.1*ptp %&& 0*flag(2)*flag(3)  
+    if use_damp_move && abs(r_final_destination-r)<1*ptp+0 && abs(r_final_destination-r)>0.1*ptp && ~slow_flag %&& 0*flag(2)*flag(3)  
         time_for_ptp=ptp/vr_max;
-        if (0.25*2*pi*sqrt(l/9.81)-time_for_ptp)*1 > 0  
-            r_final_destination=damp_move(al,as,r_direction,r_final_destination,time_for_ptp,limit);                      
+        if (0.25*2*pi*sqrt(l/9.81)-time_for_ptp*0.5)*1 > 0  
+            damp_move(al,as,r_direction,time_for_ptp,limit);                      
+            flag(1)=1;
+            ar=0;
         end  
     end
-    
-    
-%     try
-%         delete(p)
-%     catch
-%     end
+   
     
     plot_load;
-%     pp(1)=plot3(x+l*sin(theta),y,crane_h-l*cos(theta),'ob','markersize',3);% actual mass
-%     p(2)=plot3(x,y,crane_h-l,'*y','markersize',15); % mass center
-%     p(3)= plot3(x, y ,crane_h,'sy','MarkerSize',8,'linewidth',2); % trolly
-%     p(4)=plot3([x x+l*sin(theta)],[y y],[crane_h crane_h-l*cos(theta)],'color','black'); %line (cable)
-%     p(5)=plot3([-12*cos(angle) 50*cos(angle)],[-12*sin(angle) 50*sin(angle)],[crane_h crane_h],'linewidth',5,'color',[0.8500, 0.3250, 0.0980]); %jib
-%     p(6)=plot3([-12*cos(angle) 0 50*cos(angle)],[-12*sin(angle) 0 50*sin(angle)],[crane_h crane_h+5 crane_h],'linewidth',2,'color','black'); % cable
-%     p(7)=plot3([-11*cos(angle) -5*cos(angle)],[-11*sin(angle) -5*sin(angle)],[crane_h-1 crane_h-1],'linewidth',8,'color','black'); % weight
-%     ptp_vec=[ptp_vec ptp];
-   
     
     
 end

@@ -1,3 +1,4 @@
+
 global phi_dot phi angle ptp_s map map_x map_y map_z ptp_vec ptp r x y l z vr theta theta_dot distance p crane_h end_config phi obs_xy obs_dim obs_num  roof
 
 read_and_fix
@@ -30,10 +31,10 @@ while 1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     if (phi_dot>0 && phi*180/pi>0.5 && angle*180/pi<angle_destination*180/pi+5) %|| x<x_destination-distance
-        as=0.3;
+        as=0.5;
         
     elseif (phi_dot<0 && phi*180/pi<-0.5 && angle*180/pi>angle_destination*180/pi-5) %|| x>x_destination+distance
-        as=-0.3;
+        as=-0.5;
         
     else
         as=0;
@@ -71,9 +72,9 @@ end
     
     
     crane_write(ar,0,as,1);
-    pause(0.1)
+%     pause(0.1)
     
-    if ptp<0.5 && ptp_s<0.5
+    if ptp<0.5 && ptp_s<0.7
         counter=counter+1;
         ar=0;as=0;
         if counter==2

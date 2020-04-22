@@ -1,48 +1,57 @@
-clear all; close all;clc; % % % % % % % % % % % % % crane [length = 47, height=48]
 
-global theta_dot in_move_damping last_move slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle distance alpha ptp_counter
-global  map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max omega_max end_config ptp ptp_temp
- 
-distance=1;crane_h=48;
-ax=100; vr_max=1.92;
-ptp_counter=1;
-time_step=0.1;
-t1_vec=[];
-ptps_vec=[];
+global l2 crane_l in_move_damping last_move p slow_flag slow_factor max_ptp ptp_vec u time_step r x l y z angle distance alpha ptp_counter
+global map map_x map_y map_z crane_h ax theta ay vr_max vl_d_max vl_u_max omega_max end_config AdaptationLayer r_final_destination use_damp_move
 
-try
-    u=connectToCrane;
-catch
-    comfix
-    u=connectToCrane;
-end
-
-t1=4;
-crane_write(1,0,0,1)
-pause(t1)    
-crane_write(0,0,0,1)
-theta=-1;
-while theta<0
-    read_and_fix
-end
-theta_dot=1;
-
-t_acc=vr_max/ax;
-
-    time_for_ptp=sqrt(2*ptp_temp(end)/ax);
-if time_for_ptp>t_acc
-   time_for_ptp=(ptp_temp(end)-0.5*ax*t_acc^2)/vr_max+t_acc;
-end
-    
-% time_for_ptp=sqrt(2*ptp_temp(end)/ax);
-% time_for_ptp=ptp_temp(end)/vr_max;
-
-pause((0.25*2*pi*sqrt(l/9.81)-time_for_ptp)*1)
-crane_write(1,0,0,1)
-pause(time_for_ptp*1.3)
-crane_write(0,0,0,1)
-
-pause(5)
+moveit(10,0,30)
 read_and_fix
-ptp_temp(end)
-% vortex_damp
+    end_config=[x,y,z];
+    vortex_damp
+%     
+
+read_and_fix
+t_vec=[]
+theta_vec=[];
+x_0=x;
+
+if x_0<25
+    crane_write(1,0,0,1);
+    
+    while x<x_0+10
+        read_and_fix
+        
+        
+    end
+    crane_write(0,0,0,1);
+    while theta<0
+         read_and_fix
+    end
+    
+    tic
+    while toc<0.5*2*pi*sqrt(9.81/l)
+        read_and_fix
+    t_vec=[t_vec toc];
+    theta_vec=[theta_vec theta];
+    end
+%     
+% else
+%     crane_write(-1,0,0,1);
+%     while x>x_0-10
+%         read_and_fix
+%         theta_vec=[theta_vec theta];
+    
+end
+
+
+
+2*pi*sqrt(9.81/l)
+%     vr=10/toc;
+%     max_theta=max(theta_vec)*180/pi
+%     max_theta_t=acos(1-(vr^2)/(2*9.81*l))*180/pi
+%     error=(max_theta_t-max_theta)/max_theta_t*100
+    
+    
+    
+    read_and_fix
+    end_config=[x,y,z];
+    vortex_damp
+

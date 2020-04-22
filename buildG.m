@@ -5,9 +5,10 @@ global max_ptp ptp_vec u time_step x l y angle l2 roof distance alpha omega_max 
 load('map1.mat');
 max_ptp=5;
 
-N=500 ;
+N=750 ;
 % % % % % % % % % % % % % % % % % % % % % % Crane Parameters
-crane_h=48; alpha=0.117; ax=14; ay=1.85; omega_max=0.0794*0.5; vr_max=1.92; vl_d_max=1.735;vl_u_max=1.07;
+crane_h=48; l2=10; crane_l=49.5; alpha=0.0126; ax=14; ay=1.85; omega_max=0.079*0.5; vr_max=1.93; vl_d_max=1.73;vl_u_max=1.064;
+
 
 
 
@@ -17,11 +18,11 @@ roof=1; %distance from the roof
 [Px,N]=makepoints(N);
 
 
-plot3(Px(1,:),Px(2,:),Px(3,:),'.')
-hold on; grid on;xlabel('x');ylabel('y');zlabel('z'); axis equal
+% plot3(Px(1,:),Px(2,:),Px(3,:),'.')
+% hold on; grid on;xlabel('x');ylabel('y');zlabel('z'); axis equal
 % % % draw obs 
-[obsx]=makepoints2(100000);
-plot3(obsx(1,:),obsx(2,:),obsx(3,:),'k.')
+% [obsx]=makepoints2(100000);
+% plot3(obsx(1,:),obsx(2,:),obsx(3,:),'k.')
 
 
 % % % creates G matrix with time values
@@ -43,5 +44,5 @@ for j=1:N-1
 end
 
 toc
-save('G.mat','G','max_ptp','Px','G_eff');
+save('G1.mat','G','max_ptp','Px','G_eff');
 tts('map ready')
