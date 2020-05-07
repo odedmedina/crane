@@ -1,18 +1,18 @@
 close all;clear all;clc; % % % % % % % % % % % % % crane [length = 47, height=48]
 tic
 
-global max_ptp ptp_vec u time_step x l y angle l2 roof distance alpha omega_max map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max end_config
-load('map1.mat');
+global max_ptp ptp_vec u time_step x l y angle l2 distance as vs_max map map_x map_y map_z crane_h ax ay vr_max vl_d_max vl_u_max end_config
+
+map_number=1
+load(['map' num2str(map_number) '.mat'])
 max_ptp=5;
+
 
 N=750 ;
 % % % % % % % % % % % % % % % % % % % % % % Crane Parameters
-crane_h=48; l2=10; crane_l=49.5; alpha=0.0126; ax=14; ay=1.85; omega_max=0.079*0.5; vr_max=1.93; vl_d_max=1.73;vl_u_max=1.064;
+crane_h=48; l2=12; crane_l=49.5; as=0.0126; ax=0.372; ay=1.85; vs_max=0.079*0.5; vr_max=1.93; vl_d_max=1.73;vl_u_max=1.064;
 
 
-
-
-roof=1; %distance from the roof
 
 
 [Px,N]=makepoints(N);
@@ -26,6 +26,8 @@ roof=1; %distance from the roof
 
 
 % % % creates G matrix with time values
+
+
 G=zeros(N);
 G_eff=zeros(N);
 
@@ -44,5 +46,5 @@ for j=1:N-1
 end
 
 toc
-save('G1.mat','G','max_ptp','Px','G_eff');
+save(['G' num2str(map_number) '.mat'],'G','max_ptp','Px','G_eff');
 tts('map ready')

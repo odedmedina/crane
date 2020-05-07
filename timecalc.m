@@ -1,5 +1,5 @@
 function [tmax, t_r, t_l, t_s] = timecalc(p1,p2) 
-global ax ay vr_max vl_d_max vl_u_max alpha omega_max
+global ax ay vr_max vl_d_max vl_u_max as vs_max
 
 p1_n=[ sqrt(p1(1)^2+p1(2)^2),p1(3),atan2(p1(2),p1(1))] ;  % x,y,z to r,angle,l
 p2_n=[ sqrt(p2(1)^2+p2(2)^2),p2(3),atan2(p2(2),p2(1))] ;
@@ -10,10 +10,10 @@ p2=p2_n;
 
 arr=ax*sign(p2(1)-p1(1));
 all=ay*sign(p2(2)-p1(2));
-ass=alpha*sign(p2(3)-p1(3));
+ass=as*sign(p2(3)-p1(3));
 
 vrr_max=vr_max;
-vss_max=omega_max;
+vss_max=vs_max;
 
 if p2(2)<p1(2)
     vll_max=vl_d_max;
@@ -65,6 +65,9 @@ if t_s>tmax_s
 end
 
 tmax=max([t_r,t_l,t_s]);
-
+if  isnan(tmax)
+    tmax=0;
+end
+    
 
 end

@@ -8,8 +8,8 @@ global  ptp_vec ptp x y l angle theta p crane_h
     end
     
     
-    p(1)=plot3(x+l*sin(theta),y,crane_h-l*cos(theta),'ob','markersize',3);% actual mass
-    pp(2)=plot3(x,y,crane_h-l,'ok','markersize',15); % mass center
+    pp(1)=plot3(x+l*sin(theta),y,crane_h-l*cos(theta),'ob','markersize',3);% actual mass
+    pp(2)=plot3(x,y,crane_h-l,'ok','markersize',5); % mass center
     p(3)= plot3(x, y ,crane_h,'sy','MarkerSize',8,'linewidth',2); % trolly
     p(4)=plot3([x x+l*sin(theta)],[y y],[crane_h crane_h-l*cos(theta)],'color','black'); %line (cable)
     p(5)=plot3([-12*cos(angle) 50*cos(angle)],[-12*sin(angle) 50*sin(angle)],[crane_h crane_h],'linewidth',5,'color',[0.8500, 0.3250, 0.0980]); %jib

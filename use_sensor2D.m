@@ -1,11 +1,12 @@
 clc; close all; clear all
 x_offset=-34; y_offset=27;
 %
+AdaptationLayer=0;
 try
-    u=connectToCrane;
+    u=connectToCrane2;
 catch
     comfix
-    u=connectToCrane;
+    u=connectToCrane2;
 end
 flushinput(u);
 
@@ -30,9 +31,9 @@ for i=1:length(map_x)
               fclose(u);
             flushinput(u);
             fopen(u);
-            temp1=fread(u,7,'double');
+            temp1=fread(u,8,'double');
             
-            if temp1(7) 
+            if temp1(8) 
                     map(i,j)=map_z(k);
 %                     disp(map_z(k));
                 break

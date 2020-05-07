@@ -44,7 +44,7 @@ end
 limit=0.5;
 vs=0.5; vl=1; vr_temp=1;
 if slow_flag
-    vs=0.5/slow_factor*1.5; vl=1/slow_factor; vr_temp=1/slow_factor;
+    vs=0.5/slow_factor*1.5; vl=1; vr_temp=1/slow_factor;
 end
 
 fix_angles;
@@ -108,14 +108,14 @@ while flag(1)*flag(2)*flag(3)==0
     
     %
     %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% in move damping
-    if in_move_damping && last_move
+    if (in_move_damping && last_move) || slow_flag
         if sign(theta)~=sign(r_direction) && abs(theta*180/pi)>1 && ar
             ar=0.2*ar;
         end
         if sign(phi)~=sign(s_direction) && abs(phi*180/pi)>1 && as
-            as=0.2*as;
+            as=0.1*as;
         end
-%         break
+
     end
     
     if 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% anti collision
@@ -155,17 +155,16 @@ while flag(1)*flag(2)*flag(3)==0
         max_ptp=temp;
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+%    al
     
     crane_write(ar,-al,as,1);
     %     crane_write(0,-0,0,1);
-    
-    r_final_destination=40;
+     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% damp_move
     if use_damp_move && abs(r_final_destination-r)<1*ptp+0 && abs(r_final_destination-r)>0.1*ptp && ~slow_flag %&& 0*flag(2)*flag(3)  
         time_for_ptp=ptp/vr_max;
         if (0.25*2*pi*sqrt(l/9.81)-time_for_ptp*0.5)*1 > 0  
-            damp_move(al,as,r_direction,time_for_ptp,limit);                      
+            damp_move(al,as,r_direction,time_for_ptp,limit,l_destination);                      
             flag(1)=1;
             ar=0;
         end  
